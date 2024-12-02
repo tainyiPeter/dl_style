@@ -108,10 +108,9 @@ def move_file(src, dst, style, bVideo):
         print("input valid path")
         return
 
-
-if __name__ == '__main__':
-    src = "d:\\tmp1\\src"
-    dst = "d:\\tmp1\\dst"
+def proc_video_first(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # 创建路径
 
     style_list = [
         "chaoxianshi",
@@ -119,8 +118,6 @@ if __name__ == '__main__':
         "gaoran",
         "guichu",
         "menghuan",
-        "fugu",
-        "jike",
     ]
 
     for i, styleName in enumerate(style_list):
@@ -143,7 +140,142 @@ if __name__ == '__main__':
             print("full dst:", dstFullFile)
 
             proc_video_in_file(srcFullFile, dstFullFile)
+    pass
 
+def proc_video_second(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # 创建路径
+
+    style_list = [
+        "chaoxianshi",
+        "erciyuan",
+        "gaoran",
+        "guichu",
+        "menghuan",
+        "fugu",
+        "jike",
+    ]
+
+    for i, styleName in enumerate(style_list):
+        srcDir = src + "\\" + styleName
+        dstDir = dst + "\\" + styleName
+
+        index = 25
+        if (styleName == "fugu" or styleName == "jike") :
+            index = 0
+
+        srcList = GetDirs(srcDir)
+        for fileIdx, dirName in enumerate(srcList):
+            subName = dirName["name"]
+            digit = FetchDigit(subName)
+            if(int(digit) == 0):
+                print("------------------------------------------------------------------------------------")
+                print("invalid file:", subName)
+                continue
+
+            srcFullFile = srcDir + "\\" + subName
+            dstFullFile = dstDir + "\\" + str(int(digit) + index)
+
+            print("full src:", srcFullFile)
+            print("full dst:", dstFullFile)
+
+            proc_video_in_file(srcFullFile, dstFullFile)
+    pass
+
+def proc_audio_in_file(srcDir, dstDir, dstName, idx):
+    files = GetFiles(srcDir)
+    for idx, val in enumerate(files):
+        srcFileName = os.path.basename(val)
+        strNum = FetchDigit(srcFileName)
+        nNum = int(strNum) + idx
+        dstNumDir = dstDir + "\\" + str(nNum)
+
+        dstFullName = dstNumDir + "\\BGM\\"
+        if not os.path.exists(dstFullName):
+            os.makedirs(dstFullName)  # 创建路径
+        dstFullName += dstName
+
+        print("src:", val)
+        print("dst:", dstFullName)
+        shutil.copy(val, dstFullName)
+
+    pass
+
+def proc_audio_first(src, dst):
+    srcStyleList = GetDirs(src)
+
+    for fileIdx, dirName in enumerate(srcStyleList):
+        subName = dirName["name"]
+        subFullName = dirName["fullname"]
+        srcNumList = GetDirs(subFullName)
+        for numIdx, numName in enumerate(srcNumList):
+            subNumName = numName["name"]
+            subNumFullName = numName["fullname"]
+            strM1 = subNumFullName + "\\BGM\\m1.aac"
+            strM2 = subNumFullName + "\\BGM\\m2.aac"
+            strS30 = subNumFullName + "\\BGM\\s30.aac"
+
+            dstDir = dst + "\\" + subName + "\\" + subNumName + "\\BGM"
+            if not os.path.exists(dstDir):
+                os.makedirs(dstDir)  # 创建路径
+
+            print("src:", strM1)
+            print("dst:", dstDir)
+
+
+
+    pass
+def proc_audio_second(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # 创建路径
+
+    style_list = [
+        "chaoxianshi",
+        "erciyuan",
+        "gaoran",
+        "guichu",
+        "menghuan",
+        "fugu",
+        "jike",
+    ]
+
+    for i, styleName in enumerate(style_list):
+        srcDir = src + "\\" + styleName
+        dstDir = dst + "\\" + styleName
+
+        index = 25
+        if (styleName == "fugu" or styleName == "jike") :
+            index = 0
+
+        srcList = GetDirs(srcDir)
+        for fileIdx, dirName in enumerate(srcList):
+            subName = dirName["name"]
+            dstName = ""
+            if(subName == "30s"):
+                dstName = "s30.aac"
+            elif(subName == "60s"):
+                dstName = "m1.aac"
+            else:
+                dstName = "m2.aac"
+
+            srcFiles = srcDir + "\\" + subName
+            proc_audio_in_file(srcFiles, dstDir, dstName, index)
+    pass
+
+if __name__ == '__main__':
+    dst = "D:\\work\\dexuan\\2501\\dst"
+
+    # 处理视频
+    src_video_first = "D:\\work\\dexuan\\2501\\video\\first"
+    src_video_second = "D:\\work\\dexuan\\2501\\video\\second"
+    proc_video_first(src_video_first, dst)
+    proc_video_second(src_video_second, dst)
+
+    # 处理音频
+    src_audio_first = "D:\\work\\dexuan\\2501\\audio\\first"
+    src_audio_second = "D:\\work\\dexuan\\2501\\audio\\second"
+    proc_audio_first(src_audio_first, dst)
+    proc_audio_second(src_audio_second, dst)
 
     print("finish")
 
