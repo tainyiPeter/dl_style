@@ -29,7 +29,7 @@ def zip_all_files(dir):
     dirs = GetDirs(dir)
     for i, val in enumerate(dirs):
         val_zip = val["fullname"] + ".zip"
-        print("unzip path:", val["fullname"], " zip:", val_zip, " i:", i)
+        print("before zip path:", val["fullname"], " after zip:", val_zip, " i:", i)
         zip_folder(val["fullname"], val_zip)
         remove_folder(val["fullname"])
         
@@ -43,11 +43,20 @@ def remove_folder(path):
             for filename in os.listdir(path):
                 remove_folder(os.path.join(path, filename))
             os.rmdir(path)
-zip_all_files("D:\\tmp22\\dst\\chaoxianshi")
-zip_all_files("D:\\tmp22\\dst\\erciyuan")
-zip_all_files("D:\\tmp22\\dst\\gaoran")
-zip_all_files("D:\\tmp22\\dst\\guichu")
-zip_all_files("D:\\tmp22\\dst\\menghuan")
+
+
+if __name__ == '__main__':
+    dst = "D:\\work\\dexuan\\2501\\dst"
+    styles = GetDirs(dst)
+    for i, val in enumerate(styles):
+        zip_all_files(val["fullname"])
+        print("style fullname:", val["fullname"])
+
+# zip_all_files("D:\\tmp22\\dst\\chaoxianshi")
+# zip_all_files("D:\\tmp22\\dst\\erciyuan")
+# zip_all_files("D:\\tmp22\\dst\\gaoran")
+# zip_all_files("D:\\tmp22\\dst\\guichu")
+# zip_all_files("D:\\tmp22\\dst\\menghuan")
 
 print("finish")
 
