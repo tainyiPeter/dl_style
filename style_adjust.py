@@ -274,26 +274,26 @@ def showAllFiles(strPath, type):
     cnt = len(files)
     if(cnt == 0):
         print("showAllFiles no files, failed", strPath)
-        #return
+        # return
     for i, val in enumerate(files):
         fileName = os.path.basename(val)
-        print("fileName:", fileName)
+        # print("fileName:", fileName)
 
     if(type == 1):  # bgm
         if(cnt != 5):
             print("show all bgm file failed:", strPath, "type:", type, " cnt:", cnt)
     elif(type == 2): # effect
-        if (cnt != 2):
+        if (cnt < 2):
             print("show all effect file failed:", strPath, "type:", type, " cnt:", cnt)
 
     pass
 def checkDst(dst):
     dstDirs = GetDirs(dst)
     for i, val in enumerate(dstDirs):
-        print("style full name:", val["fullname"])
+        # print("style full name:", val["fullname"])
         numDirs = GetDirs(val["fullname"])
         for iNum, valNum in enumerate(numDirs):
-            print("num full name:", valNum["fullname"])
+            # print("num full name:", valNum["fullname"])
             bgmPath = valNum["fullname"] + "\\BGM"
             effPath = valNum["fullname"] + "\\effects"
             showAllFiles(bgmPath, 1)
@@ -301,24 +301,27 @@ def checkDst(dst):
     pass
 
 if __name__ == '__main__':
-    dst = "D:\\work\\dexuan\\2501\\dst"
+    parentPath = "D:\\work\\dexuan\\2501\\1209-test"
 
-    # 处理视频
-    # src_video_first = "D:\\work\\dexuan\\2501\\video\\first"
-    # src_video_second = "D:\\work\\dexuan\\2501\\video\\second"
+
+    dst = parentPath + "\\dst"
+
+    # # 处理视频
+    # src_video_first = parentPath + "\\video\\first"
+    # src_video_second = parentPath + "\\video\\second"
     # proc_video_first(src_video_first, dst)
     # proc_video_second(src_video_second, dst)
-    #
-    # # 处理音频
-    # src_audio_first = "D:\\work\\dexuan\\2501\\audio\\first"
-    # src_audio_second = "D:\\work\\dexuan\\2501\\audio\\second"
+    # #
+    # # # 处理音频
+    # src_audio_first = parentPath + "\\audio\\first"
+    # src_audio_second = parentPath + "\\audio\\second"
     # proc_audio_first(src_audio_first, dst)
     # proc_audio_second(src_audio_second, dst)
 
     checkDst(dst)
 
 
-    print("finish")
+    print("finish111")
 
 
 
