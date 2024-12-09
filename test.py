@@ -15,7 +15,15 @@ if __name__ == '__main__':
     #
     # shutil.move("d:\\tmp\\1.txt", "d:\\tmp2\\33.txt")
 
-    num = 33
-    width = 8
-    str_num = f"{num-30:0>2}.aac"  # 使用0填充，宽度为6
-    print(str_num)  # 输出: '000123'
+    src = "D:\\tmp\\play\\法语\\2sds.aac"
+    dst = "D:\\tmp\\play\\20.aac"
+
+    try:
+        for i in range(0, 10):
+            print("befor i:", i)
+            shutil.move(src, dst)
+            print("i:", i)
+
+    except:
+        print("sss")
+

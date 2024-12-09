@@ -29,6 +29,18 @@ def findFile(pattern, base='.'):
                 matches.append(path.join(root, f))
     return matches
 
+def GetFiles(path_k):
+    paths = os.walk(path_k)
+    files = []
+    for path, dir_lst, file_lst in paths:
+        # print("dir_cnt:", len(dir_lst))
+        # print("file_cnt:", len(file_lst))
+        for dir_name in file_lst:
+            f = os.path.join(path, dir_name)
+            files.append(f)
+        return files
+    return files
+
 def procData(excelFile, langDstPath, audioSrcPath, column):
     print("excelFile:", excelFile, " langDstPath:", langDstPath, " audioSrcPath:", audioSrcPath, " column:", column)
 
@@ -73,7 +85,8 @@ def procData(excelFile, langDstPath, audioSrcPath, column):
                 print("find kill audio file, failed:", audioFileName)
                 continue
             num_acc = f"{i:0>2}.aac"
-            shutil.move(audioSrcPath + "\\" + audioFileName, killAudioPath + "\\" + num_acc)  #
+            print("move kill src:", audioSrcPath + "\\" + audioFileName, " dst:", killAudioPath + "\\" + num_acc)
+            shutil.move(audioSrcPath + "\\" + audioFileName, killAudioPath + "\\" + num_acc)
             slogan += "\n"
             kf.write(slogan)
 
@@ -87,8 +100,9 @@ def procData(excelFile, langDstPath, audioSrcPath, column):
             if(len(audioFiles) == 0):
                 print("find dead audio file, failed:", audioFileName)
                 continue
-            num_acc = f"{i-deadIdx-1:0>2}.aac"
-            shutil.move(audioSrcPath + "\\" + audioFileName, deadAudioPath + "\\" + num_acc)  #
+            num_acc = f"{i-deadIdx+1:0>2}.aac"
+            print("move dead src:", audioSrcPath + "\\" + audioFileName, " dst:", killAudioPath + "\\" + num_acc)
+            shutil.move(audioSrcPath + "\\" + audioFileName, deadAudioPath + "\\" + num_acc)
             slogan += "\n"
             deadSloganFile.write(slogan)
 
@@ -116,8 +130,46 @@ def ExcelToLangFile(excelFile, dstPath, audioPath, column):
     procData(excelFile, dstPath, audioPath, column)
     pass
 
+def count_lines_in_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return sum(1 for line in file)
 
+    return 0
 
+def checkLangCompletion(langDstPath):
+    # slogan
+    sloganPath = langDstPath + "\\slogan"
+    killSloganPath = sloganPath + "\\kill"
+    deadSloganPath = sloganPath + "\\dead"
+    killSloganFile = killSloganPath + "\\" + "slogan.dat"
+    deadSloganFile = deadSloganPath + "\\" + "slogan.dat"
+
+    killSloganCnt = count_lines_in_file(killSloganFile)
+    if(killSloganCnt != 20):
+        print("slogan failed:", killSloganFile)
+    deadSloganCnt = count_lines_in_file(deadSloganFile)
+    if(killSloganCnt != 20):
+        print("slogan failed:", deadSloganFile)
+
+    # audio
+    audioPath = langDstPath + "\\audio"
+    killAudioPath = audioPath + "\\kill"
+    deadAudioPath = audioPath + "\\dead"
+    kills = GetFiles(killAudioPath)
+    deads = GetFiles(deadAudioPath)
+    if(len(kills) != 20):
+        print("video failed:", killAudioPath)
+    if(len(deads) != 20):
+        print("video failed:", deadAudioPath)
+
+    pass
+def checkDst(dstPath, LangtoColumn):
+    for i, (lang, value) in enumerate(LangtoColumn.items()):
+        langDstPath = dstPath + "\\" + lang
+        checkLangCompletion(langDstPath)
+        print("finish check:", langDstPath)
+
+    pass
 
 if __name__ == '__main__':
     playDst = "D:\\work\\dexuan\\2501\\play111\\"
@@ -134,42 +186,41 @@ if __name__ == '__main__':
     LangtoColumn = {
         # "cn": 2,
         # "en": 3,
+
         "German": [4, "德语"],
-        "French": [5, "法语"],
-        "Polish": [6, "波兰语"],
-        "Jap": [7, "日本语"],
-        "Span": [8, "西班牙语"],
-        "Itali": [9, "意大利语"],
-        "Arabic": [10, "阿拉伯语"],
-        "CnTradition": [11, "繁体中文"],
-        "PortugueseBrazil": [12, "巴西葡萄牙语"],
-        "Korean": [13, "韩语"],
-        "Norwegian": [14, "挪威语"],
-        "Hung": [15, "匈牙利语"],
-        "Czech": [16, "捷克语"],
-        "Slovak": [17, "斯洛伐克语"],
-        "Romanian": [18, "罗马尼亚语"],
-        "Dutch": [19, "荷兰语"],
-        "Swedish": [20, "瑞典语"],
-        "Croatian": [21, "克罗地亚语"],
-        "Finnish": [22, "芬兰语"],
-        "Turkish": [23, "土耳其语"],
-        "Ukra": [24, "乌克兰语"],
-        "Danish": [25, "丹麦语"],
-        "PortugueseEurope": [26, "葡萄牙语"],
-        "Greek": [27, "希腊语"],
-        "Russian": [28, "俄语"],
+
+        # "German": [4, "德语"],
+        # # "French": [5, "法语"],
+        # "Polish": [6, "波兰语"],
+        # "Jap": [7, "日本语"],
+        # "Span": [8, "西班牙语"],
+        # "Itali": [9, "意大利语"],
+        # "Arabic": [10, "阿拉伯语"],
+        # "CnTradition": [11, "繁体中文"],
+        # "PortugueseBrazil": [12, "巴西葡萄牙语"],
+        # # "Korean": [13, "韩语"],
+        # "Norwegian": [14, "挪威语"],
+        # "Hung": [15, "匈牙利语"],
+        # "Czech": [16, "捷克语"],
+        # "Slovak": [17, "斯洛伐克语"],
+        # "Romanian": [18, "罗马尼亚语"],
+        # "Dutch": [19, "荷兰语"],
+        # "Swedish": [20, "瑞典语"],
+        # "Croatian": [21, "克罗地亚语"],
+        # "Finnish": [22, "芬兰语"],
+        # "Turkish": [23, "土耳其语"],
+        # "Ukra": [24, "乌克兰语"],
+        # "Danish": [25, "丹麦语"],
+        # "PortugueseEurope": [26, "葡萄牙语"],
+        # "Greek": [27, "希腊语"],
+        # # "Russian": [28, "俄语"],
     }
 
-    for i, (lang, value) in enumerate(LangtoColumn.items()):
-        audioLangPath = audioPath + "\\" + value[1]
-        langDstPath = dstPath + "\\" + lang
-        print("lang:", lang, " col:", value[0], " audioFile:", audioLangPath, " langDstPath:", langDstPath)
-        procData(excelFile, langDstPath, audioLangPath, value[0])
+    # for i, (lang, value) in enumerate(LangtoColumn.items()):
+    #     audioLangPath = audioPath + "\\" + value[1]
+    #     langDstPath = dstPath + "\\" + lang
+    #     print("lang:", lang, " col:", value[0], " audioFile:", audioLangPath, " langDstPath:", langDstPath)
+    #     procData(excelFile, langDstPath, audioLangPath, value[0])
 
-
-    ## test
-    # files = findFile("Guter Treffer\\w.aac", audioPath+"\\deyu")
-    # print("path:", audioPath+"\\deyu")
-    # print("cnt:", len(files))
+    checkDst(dstPath, LangtoColumn)
 
