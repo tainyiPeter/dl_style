@@ -41,6 +41,12 @@ def GetFiles(path_k):
         return files
     return files
 
+def PrintFile(fileName):
+    with open(fileName, "r", encoding='utf-8') as file:
+        content = file.read()
+        print("fileName:", fileName)
+        print(content)
+
 def procData(excelFile, langDstPath, audioSrcPath, column):
     print("excelFile:", excelFile, " langDstPath:", langDstPath, " audioSrcPath:", audioSrcPath, " column:", column)
 
@@ -146,10 +152,15 @@ def checkLangCompletion(langDstPath):
 
     killSloganCnt = count_lines_in_file(killSloganFile)
     if(killSloganCnt != 20):
-        print("slogan failed:", killSloganFile)
+        print("kill slogan failed:", killSloganFile, " cnt:", killSloganCnt)
     deadSloganCnt = count_lines_in_file(deadSloganFile)
-    if(killSloganCnt != 20):
-        print("slogan failed:", deadSloganFile)
+    if(deadSloganCnt != 20):
+        print("dead slogan failed:", deadSloganFile, " cnt:", deadSloganCnt)
+
+
+    # print text result
+    PrintFile(killSloganFile)
+    PrintFile(deadSloganFile)
 
     # audio
     audioPath = langDstPath + "\\audio"
@@ -158,17 +169,23 @@ def checkLangCompletion(langDstPath):
     kills = GetFiles(killAudioPath)
     deads = GetFiles(deadAudioPath)
     if(len(kills) != 20):
-        print("video failed:", killAudioPath)
+        print("kill video failed, ", killAudioPath, " cnt:", len(kills))
     if(len(deads) != 20):
-        print("video failed:", deadAudioPath)
+        print("dead video failed:", deadAudioPath, " cnt:", len(deads))
 
+    # print audio result
+    for key, val in enumerate(kills):
+        print("audio:", val)
+    for key, val in enumerate(deads):
+        print("audio:", val)
     pass
 def checkDst(dstPath, LangtoColumn):
     for i, (lang, value) in enumerate(LangtoColumn.items()):
         langDstPath = dstPath + "\\" + lang
         checkLangCompletion(langDstPath)
-        print("finish check:", langDstPath)
+        # print("finish check:", langDstPath)
 
+    print("finish check dstPath:", dstPath)
     pass
 
 if __name__ == '__main__':
@@ -184,36 +201,39 @@ if __name__ == '__main__':
     #print("data:", data)
 
     LangtoColumn = {
-        # "cn": 2,
+        "cn": [2, "中文"],
         # "en": 3,
 
-        "German": [4, "德语"],
+        # "PortugueseBrazil": [26, "巴西葡萄牙语"],
+        # "PortugueseEurope": [12, "葡萄牙语"],
 
-        # "German": [4, "德语"],
-        # # "French": [5, "法语"],
-        # "Polish": [6, "波兰语"],
-        # "Jap": [7, "日本语"],
-        # "Span": [8, "西班牙语"],
-        # "Itali": [9, "意大利语"],
-        # "Arabic": [10, "阿拉伯语"],
-        # "CnTradition": [11, "繁体中文"],
-        # "PortugueseBrazil": [12, "巴西葡萄牙语"],
-        # # "Korean": [13, "韩语"],
-        # "Norwegian": [14, "挪威语"],
-        # "Hung": [15, "匈牙利语"],
-        # "Czech": [16, "捷克语"],
-        # "Slovak": [17, "斯洛伐克语"],
-        # "Romanian": [18, "罗马尼亚语"],
-        # "Dutch": [19, "荷兰语"],
-        # "Swedish": [20, "瑞典语"],
-        # "Croatian": [21, "克罗地亚语"],
-        # "Finnish": [22, "芬兰语"],
-        # "Turkish": [23, "土耳其语"],
-        # "Ukra": [24, "乌克兰语"],
-        # "Danish": [25, "丹麦语"],
-        # "PortugueseEurope": [26, "葡萄牙语"],
-        # "Greek": [27, "希腊语"],
-        # # "Russian": [28, "俄语"],
+
+
+        "German": [4, "德语"],
+        "French": [5, "法语"],
+        "Polish": [6, "波兰语"],
+        "Jap": [7, "日本语"],
+        "Span": [8, "西班牙语"],
+        "Itali": [9, "意大利语"],
+        "Arabic": [10, "阿拉伯语"],
+        "CnTradition": [11, "繁体中文"],
+        "PortugueseEurope": [12, "葡萄牙语"],
+        "Korean": [13, "韩语"],
+        "Norwegian": [14, "挪威语"],
+        "Hung": [15, "匈牙利语"],
+        "Czech": [16, "捷克语"],
+        "Slovak": [17, "斯洛伐克语"],
+        "Romanian": [18, "罗马尼亚语"],
+        "Dutch": [19, "荷兰语"],
+        "Swedish": [20, "瑞典语"],
+        "Croatian": [21, "克罗地亚语"],
+        "Finnish": [22, "芬兰语"],
+        "Turkish": [23, "土耳其语"],
+        "Ukra": [24, "乌克兰语"],
+        "Danish": [25, "丹麦语"],
+        "PortugueseBrazil": [26, "巴西葡萄牙语"],
+        "Greek": [27, "希腊语"],
+         "Russian": [28, "俄语"],
     }
 
     # for i, (lang, value) in enumerate(LangtoColumn.items()):
@@ -223,4 +243,5 @@ if __name__ == '__main__':
     #     procData(excelFile, langDstPath, audioLangPath, value[0])
 
     checkDst(dstPath, LangtoColumn)
+    # PrintFile("D:\\tmp\\slogan.dat")
 
