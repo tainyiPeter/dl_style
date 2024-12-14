@@ -1,29 +1,29 @@
 import shutil
 
+import json
+
+
+
+c = {}
+def test():
+    c1 = {}
+    c1["a"] = 1
+    c1["b"] = 2
+
+    return c1
+
 if __name__ == '__main__':
-    # LangtoColumn = {
-    #     "German": [4, "yun"],
-    #     "33" : [5, "3"],
-    #     "44": [5, "7"]
-    # }
-    #
-    # for i, (lang, value) in enumerate(LangtoColumn.items()):
-    #     if(lang == "33"):
-    #         continue
-    #     print("lang:", lang, " key", value[0], " value:", value[1])
-    # print("hello")
-    #
-    # shutil.move("d:\\tmp\\1.txt", "d:\\tmp2\\33.txt")
+    # 假设有一个名为data.json的文件
+    json_file_path = 'D:\\tmp\\styleFile\\beb_scope.json'
 
-    src = "D:\\tmp\\play\\法语\\2sds.aac"
-    dst = "D:\\tmp\\play\\20.aac"
+    # 读取并解析JSON文件
+    with open(json_file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
 
-    try:
-        for i in range(0, 10):
-            print("befor i:", i)
-            shutil.move(src, dst)
-            print("i:", i)
+    # 现在data变量包含了JSON文件中的数据，可以按需使用
+    print("cnt:", len(data))
+    print(data["7"])
 
-    except:
-        print("sss")
+
+
 

@@ -233,7 +233,7 @@ if __name__ == '__main__':
         "Danish": [25, "丹麦语"],
         "PortugueseBrazil": [26, "巴西葡萄牙语"],
         "Greek": [27, "希腊语"],
-         "Russian": [28, "俄语"],
+        "Russian": [28, "俄语"],
     }
 
     # for i, (lang, value) in enumerate(LangtoColumn.items()):

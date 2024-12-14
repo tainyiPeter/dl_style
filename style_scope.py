@@ -36,7 +36,7 @@ def GetGameEvent(strEvent):
     gameEventToInt = {
         "kill":0,
         "assist":2,
-        "konck down":3,
+        "knock down":3,
         "defeat":4,
         "victory":5
     }
@@ -47,22 +47,58 @@ def GetGameEvent(strEvent):
     else:
         return gameEventToInt[strEvent]
 # 1
-def updateEvent(events, gameEvent, styleIndex):
-    if(gameEvent not in events):
-        events[gameEvent] = []
-    events[gameEvent].append(styleIndex)
+def updateEvent(events, strEventName, styleIndex):
+    strEventName = strEventName.strip()
+    gameEvent = GetGameEvent(strEventName)
+    oneEvent = {strEventName:[gameEvent]}
+    print("test:", styleIndex)
+
+    # allEvents = ["kill", "assist", "knock down", "defeat", "victory"]
+    # for i, value in enumerate(allEvents):
+    #     if (value not in events):
+    #         events.append({value:[]})
+
+    for key, tmp in enumerate(events):
+        for eventName in events[key]:
+            if eventName == strEventName:
+                if(styleIndex not in events[key][eventName]):
+                    events[key][eventName].append(styleIndex)
+                    return
+
+    # if gameEvent == 100:
+    #     for i, value in enumerate(allEvents):
+    #         events[value].append(styleIndex)
+    # #for key, (eventName, eventList) in enumerate(events):
+    # for key, eventName in enumerate(events):
+    #     if(eventName.keys() == strEventName):
+    #         events[strEventName].append(styleIndex)
+    #         return
+    events.append(oneEvent)
+
+
 
 #def appendEvent(events, gameEvent, idx):
 
+def GetGameObj(games, gameType):
+    bFind = False
+    for key, value in enumerate(games.items()):
+        for gameKey, gameValue in enumerate(value[1]):
+            if(gameValue["type"] == gameType):
+                return gameValue
+    return {}
 
 # 第二步
-def updateGame(games, strGameType, bSelected, events):
+def updateGame(games, strGameType, bSelected, events, styleIdx):
     gameType = GetGameType(strGameType)
-    if(gameType not in games):
-        games["type"] = gameType
-    # games["prop"] = prop
-    games["scope"] = int_to_bool(bSelected)
-    games["event"] = events
+    oneGame = GetGameObj(games, gameType)
+    if(oneGame is None):
+        oneGame["type"] = gameType
+        oneGame["scope"].append(styleIdx)
+        oneGame["event"].append(events)
+
+    else:
+        oneGame["scope"].append(styleIdx)
+        oneGame["event"].append(events)
 
 
 ##
@@ -82,20 +118,37 @@ def GetStyleIndex(strName, bSecond):
 
     return styleIndex
 
-def AppendStyle(collect, styleType, strGameType, gameEvent, bSelected, strStyle, bSecond):
-    styleIdx = GetStyleIndex(strStyle, bSecond)
-
+def AppendStyle(collect, styleType, strGameType, strGameEvent, bSelected, strStyleFullName, bSecond):
+    styleIdx = GetStyleIndex(strStyleFullName, bSecond)
+    gameType = GetGameType(strGameType)
     if( styleType not in collect):
-        collect[styleType] = {}
+        collect[styleType] = {"games":[]}
 
     eventName = "event"
-    if(eventName not in collect[styleType]):
-        collect[styleType][eventName] = {}
 
-    # events = styleData["event"]
-    updateEvent(collect[styleType][eventName], gameEvent, styleIdx)  #
-    updateGame(collect[styleType], strGameType, bSelected, collect[styleType][eventName])
-    updateStyle(collect, styleType, collect[styleType])
+    oneGame = GetGameObj(collect[styleType], gameType)
+    oneGame["type"] = gameType
+
+    if eventName not in oneGame:
+        oneGame[eventName] = []
+    updateEvent(oneGame[eventName], strGameEvent, styleIdx)
+    if "scope" not in oneGame:
+        oneGame["scope"] = []
+
+    if(styleIdx not in oneGame["scope"]):
+        oneGame["scope"].append(styleIdx)
+    if(oneGame not in collect[styleType]["games"]):
+        collect[styleType]["games"].append(oneGame)
+
+    # updateGame(collect[styleType], strGameType, bSelected, collect[styleType][eventName], styleIdx)
+
+    # if(eventName not in collect[styleType]):
+    #     collect[styleType][eventName] = {}
+    #
+    # # events = styleData["event"]
+    # updateEvent(collect[styleType][eventName], gameEvent, styleIdx)  #
+    # updateGame(collect[styleType], strGameType, bSelected, collect[styleType][eventName], styleIdx)
+    # updateStyle(collect, styleType, collect[styleType])
 
     pass
 
@@ -118,10 +171,10 @@ def parseExcel(fileName, c):
     #fileName = "D:\\work\\dexuan\\2501\\play_2501.xlsx"
     colName = 0
     colEvent = 1
+    colEffect = 2
     colStyle = 3
     colScope = 4
     colGame = 5
-
 
     sheet1 = "第一批视频"
     sheet2 = "第二批视频"
@@ -129,33 +182,36 @@ def parseExcel(fileName, c):
     df = pd.read_excel(fileName, sheet_name=sheet1)
     row_count = df.shape[0]
     print(f'行数: {row_count}')
-    # row_count = 2
+    row_count = 30
     for row in range(1, row_count):
         #print("---------------------------------------------------------")
-        strName  = df.iloc[row, colName]  # 读取第row行，第column列的数据
-        strEvent = df.iloc[row, colEvent]  # 读取第row行，第column列的数据
-        strStyle = df.iloc[row, colStyle]  # 读取第row行，第column列的数据
-        strScope = df.iloc[row, colScope]  # 读取第row行，第column列的数据
-        strGame  = df.iloc[row, colGame]  # 读取第row行，第column列的数据
+        strName  = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
+        strEvent = df.iloc[row, colEvent].strip()  # 读取第row行，第column列的数据
+        strEffect = df.iloc[row, colEffect].strip()  # 读取第row行，第column列的数据
+        strStyle = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
+        strScope = df.iloc[row, colScope] # 读取第row行，第column列的数据
+        strGame  = df.iloc[row, colGame].strip()  # 读取第row行，第column列的数据
 
+        # print(strName, " ", strEvent, " ", strStyle, " ", strScope, " ", strGame)
+        if(strEffect == "begin" or strEffect == "end"):
+            continue
         AppendStyle(c, strStyle, strGame, strEvent, strScope, strName, False)
-        # AppendStyle(c, strStyle, strGame, strEvent, strScope, strName, False)
 
 
-    df2 = pd.read_excel(fileName, sheet_name=sheet2)
-    row_count = df2.shape[0]
-    print(f'第二批视频行数: {row_count}')
-
-    row_count = df2.shape[0]
-    print(f'行数: {row_count}')
-    for row in range(1, row_count):
-        strName  = df2.iloc[row, colName]  # 读取第row行，第column列的数据
-        strEvent = df2.iloc[row, colEvent]  # 读取第row行，第column列的数据
-        strStyle = df2.iloc[row, colStyle]  # 读取第row行，第column列的数据
-        strScope = df2.iloc[row, colScope]  # 读取第row行，第column列的数据
-        strGame  = df2.iloc[row, colGame]  # 读取第row行，第column列的数据
-
-        AppendStyle(c, strStyle, strGame, strEvent, strScope, strName, True)
+    # df2 = pd.read_excel(fileName, sheet_name=sheet2)
+    # row_count = df2.shape[0]
+    # print(f'第二批视频行数: {row_count}')
+    #
+    # row_count = df2.shape[0]
+    # print(f'行数: {row_count}')
+    # for row in range(1, row_count):
+    #     strName  = df2.iloc[row, colName]  # 读取第row行，第column列的数据
+    #     strEvent = df2.iloc[row, colEvent]  # 读取第row行，第column列的数据
+    #     strStyle = df2.iloc[row, colStyle]  # 读取第row行，第column列的数据
+    #     strScope = df2.iloc[row, colScope]  # 读取第row行，第column列的数据
+    #     strGame  = df2.iloc[row, colGame]  # 读取第row行，第column列的数据
+    #
+    #     AppendStyle(c, strStyle, strGame, strEvent, strScope, strName, True)
 
 
 
@@ -165,17 +221,34 @@ if __name__ == '__main__':
     }
 
 
-    AppendStyle(c, "erciyuan", "APEX", "victory",  1, "erciyuan_01_begin_victory", True)
-    AppendStyle(c, "erciyuan", "APEX", "victory", 0, "erciyuan_01_begin_victory", False)
-    AppendStyle(c, "guichu", "APEX", "victory", 1, "erciyuan_01_begin_victory", True)
+    # AppendStyle(c, "erciyuan", "APEX", "victory",  1, "erciyuan_01_begin_victory", True)
+    # AppendStyle(c, "erciyuan", "APEX", "victory", 0, "erciyuan_01_begin_victory", False)
+    # AppendStyle(c, "guichu", "APEX", "victory", 1, "erciyuan_01_begin_victory", True)
 
 
 
     excelFile = "d:\\tmp\\素材拆分1129.xlsx"
-    # parseExcel(excelFile, c)
+    parseExcel(excelFile, c)
     #
     dstPath = "d:\\tmp\\styleFile"
     SaveLocalData(dstPath, c)
 
-    print(c)
+    events = []
+    # styleIdx = 61
+    # # events.append({"kill":[6]})
+    # for key, oneEvent in enumerate(events):
+    #     for eventName in events[key]:
+    #         if eventName == "kill":
+    #             if(styleIdx not in events[key][eventName]):
+    #                 events[key][eventName].append(styleIdx)
+    #
+    #
+    #     # for i, (eventName, eList) in enumerate(events[key].items()):
+    #     #     if(eventName == "kill"):
+    #     #         events[key].items(i).append(45)
+
+
+
+    print(events)
+    # print(c)
     print("finish ...")
