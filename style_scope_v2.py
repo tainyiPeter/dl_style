@@ -129,14 +129,7 @@ def ParseGame(fileName, dstPath):
     for key, value in enumerate(c.items()):
         c[value[0]] = c[value[0]] + all
 
-    if not os.path.exists(dstPath):
-        os.makedirs(dstPath)  # 创建路径
-    strJson = json.dumps(c)
-    saveFile = dstPath + "\\games.json"
-    with open(saveFile, "w", encoding='utf-8') as file:
-        # print(strJson)
-        file.write(strJson)
-
+    SaveFile(dstPath + "\\games.json", c)
     return c
     pass
 
@@ -173,13 +166,7 @@ def ParseEvent(fileName, dstPath):
         gEvent = GetGameEvent(strEvent)
         upsert_dict(c, gEvent, styleIndex)
 
-    if not os.path.exists(dstPath):
-        os.makedirs(dstPath)  # 创建路径
-    strJson = json.dumps(c)
-    saveFile = dstPath + "\\events.json"
-    with open(saveFile, "w", encoding='utf-8') as file:
-        # print(strJson)
-        file.write(strJson)
+    SaveFile(dstPath + "\\events.json", c)
     return c
     pass
 
@@ -193,35 +180,45 @@ def parseScope(fileName, dstPath):
         # print("---------------------------------------------------------")
         strName = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
         styleIndex = GetStyleIndex(strName, False)
-        strStyle = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
-        styleIndex = 100 * GetStyleIdx(strStyle) + styleIndex
-
         scope = df.iloc[row, colScope]
         if(scope < 1):
             continue
         strEffect = df.iloc[row, colEffect].strip()  # 读取第row行，第column列的数据
-        effectFlag = 100
+        effectFlag = 0
         if strEffect == "effect":
-            effectFlag = 0
-        elif strEffect == "word":
             effectFlag = 1
-        if effectFlag == 100:
+        elif strEffect == "word":
+            effectFlag = 2
+        if effectFlag == 0:
             continue
-        upsert_dict(c, effectFlag, styleIndex)
+        styleIndex += 100 * effectFlag
+
+        strStyle = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
+        styleType = GetStyleIdx(strStyle)
+        styleIndex += 1000 * styleType
+
+        strEvent = df.iloc[row, colEvent].strip()
+        eventType = GetGameEvent(strEvent)
+        styleIndex += 10000 * eventType
+
+        strGame = df.iloc[row, colGame].strip()
+        gameType = GetGameType(strGame)
+        styleIndex += 100000 * gameType
+
+        upsert_dict(c, 2, styleIndex)
 
     df2 = pd.read_excel(fileName, sheet_name=sheet2)
     row_count = df2.shape[0]
     print(f'行数: {row_count}')
-    # row_count = 3
+    # only test
+    # row_count = 5
     for row in range(1, row_count):
         # print("---------------------------------------------------------")
         strName = df2.iloc[row, colName].strip()  # 读取第row行，第column列的数据
         styleIndex = GetStyleIndex(strName, True)
-        strStyle = df2.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
-        styleIndex = 100 * GetStyleIdx(strStyle) + styleIndex
 
         scope = df2.iloc[row, colScope]
-        if(scope < 1):
+        if (scope < 1):
             continue
         strEffect = df2.iloc[row, colEffect].strip()  # 读取第row行，第column列的数据
         effectFlag = 0
@@ -231,7 +228,21 @@ def parseScope(fileName, dstPath):
             effectFlag = 2
         if effectFlag == 0:
             continue
-        upsert_dict(c, effectFlag, styleIndex)
+        styleIndex += 100 * effectFlag
+
+        strStyle = df2.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
+        styleType = GetStyleIdx(strStyle)
+        styleIndex += 1000 * styleType
+
+        strEvent = df2.iloc[row, colEvent].strip()
+        eventType = GetGameEvent(strEvent)
+        styleIndex += 10000 * eventType
+
+        strGame = df2.iloc[row, colGame].strip()
+        gameType = GetGameType(strGame)
+        styleIndex += 100000 * gameType
+
+        upsert_dict(c, 2, styleIndex)
 
     SaveFile(dstPath+"\\effect_scope.json", c)
 
@@ -245,14 +256,15 @@ def MergeList(l1, l2):
 if __name__ == '__main__':
     dstPath = "d:\\tmp\\styleFile"
     excelFile = "d:\\tmp\\素材拆分1129.xlsx"
+
     cGame = ParseGame(excelFile, dstPath)
     cEvent = ParseEvent(excelFile, dstPath)
-
     cScope = parseScope(excelFile, dstPath)
 
+
+    # test case
     match = [0, 0, 2, 5]
     match2 = [3,5, 2,]
-
     mmm = MergeList(match, match2)
     print("mm:", mmm)
     select = False
@@ -270,8 +282,6 @@ if __name__ == '__main__':
     #     print (cGame["APEX"])
     #     break
     #     # print(i, ' ', i[1])
-
-
 
 
     pass

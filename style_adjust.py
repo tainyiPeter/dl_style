@@ -15,8 +15,8 @@ def GetFiles(path_k):
     paths = os.walk(path_k)
     files = []
     for path, dir_lst, file_lst in paths:
-        print("dir_cnt:", len(dir_lst))
-        print("file_cnt:", len(file_lst))
+        # print("dir_cnt:", len(dir_lst))
+        # print("file_cnt:", len(file_lst))
         for dir_name in file_lst:
             f = os.path.join(path, dir_name)
             files.append(f)
@@ -301,11 +301,12 @@ def checkDst(dst):
     pass
 
 if __name__ == '__main__':
-    parentPath = "D:\\work\\dexuan\\2501\\1209-test"
+    # parentPath = "D:\\work\\dexuan\\2501\\1209-test"
+    parentPath = "D:\\work\\stella\\12-09\\test_1"
 
 
     dst = parentPath + "\\dst"
-
+    #
     # # 处理视频
     # src_video_first = parentPath + "\\video\\first"
     # src_video_second = parentPath + "\\video\\second"

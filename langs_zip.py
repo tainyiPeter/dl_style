@@ -49,7 +49,7 @@ def remove_folder(path):
 
 if __name__ == '__main__':
     # dst = "D:\\work\\dexuan\\2501\\dst"
-    dst = "D:\\tmp\\dst"
+    dst = "D:\\tmp\\11"
     styles = GetDirs(dst)
     for i, val in enumerate(styles):
         zip_all_files(val["fullname"])
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 # zip_all_files("D:\\tmp22\\dst\\guichu")
 # zip_all_files("D:\\tmp22\\dst\\menghuan")
 
-print("finish")
+    print("finish")
 
 # 使用函数压缩指定文件夹
 # folder_to_compress = 'D:\\tmp\\style\\2'  # 要压缩的文件夹路径

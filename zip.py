@@ -48,7 +48,8 @@ def remove_folder(path):
 if __name__ == '__main__':
 
     #
-    dst = "D:\\work\\dexuan\\2501\\dst"
+    # dst = "D:\\work\\dexuan\\2501\\dst"
+    dst = "D:\\work\\stella\\12-09\\dst"
     styles = GetDirs(dst)
     for i, val in enumerate(styles):
         zip_all_files(val["fullname"])
