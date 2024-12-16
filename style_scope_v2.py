@@ -249,32 +249,132 @@ def parseScope(fileName, dstPath):
     return c
     pass
 
+def GetBeginEndStyleIndex(gameType, styleType, bSelected):
+
+    pass
+
+def GetStylelist(srcList, type):
+    ret = []
+    for key, value in enumerate(srcList):
+        if ((int)(value / 100) == type):
+            idx = value % 100
+            ret.append(idx)
+    return ret
+
+
+def GetScopeEffectStyleIdx(gameType, styleType, eventType):
+    ret = []
+    srcList = cScope[2]
+    for key, value in enumerate(srcList):
+        sType = (int)(value / 1000) % 10
+        eType = (int)(value / 10000) % 10
+        gType = (int)(value / 100000) % 100
+
+        if(sType == styleType and eType == eventType and gType == gameType):
+            styleIdx = int(value % 1000)
+            styleIdx = styleIdx % 100
+            ret.append(styleIdx)
+
+    print(ret)
+    return ret
+
+def GetEffectStyleIndex(gameType, styleType, eventType, bSelected):
+    ret = MergeList(cGame[gameType], cEvent[eventType])
+    ret = GetStylelist(ret, styleType)
+
+    if bSelected:
+        selList = GetScopeEffectStyleIdx(gameType, styleType, eventType)
+        ret = MergeList(ret, selList)
+
+    return ret
+
 def MergeList(l1, l2):
     return list(set(l1) & set(l2))
 
     pass
+
 if __name__ == '__main__':
     dstPath = "d:\\tmp\\styleFile"
     excelFile = "d:\\tmp\\素材拆分1129.xlsx"
+
+    global cGame
+    global cEvent
+    global cScope
 
     cGame = ParseGame(excelFile, dstPath)
     cEvent = ParseEvent(excelFile, dstPath)
     cScope = parseScope(excelFile, dstPath)
 
 
-    # test case
-    match = [0, 0, 2, 5]
-    match2 = [3, 5, 2,]
-    mmm = MergeList(match, match2)
-    print("mm:", mmm)
-    select = False
-    gameType = 4
-    styleType = 6
+    gameTypeList = [1,2,4,5,6,7,8, 10]  # 穿越火线不支持
+    styleTypeList = [2, 3, 4, 5, 6, 7, 8]   # 素材风格
+    eventTypeList = [0, 2, 3, 4, 5]   # 不包含 1 死亡
 
-    m1 = MergeList(cGame[gameType], cEvent[2])
-    if(select):
-        m1 = cScope[1]
-    print("m1:", m1)
+    # print(cGame[9])
+    a1 = {}
+    a2 = {}
+    for keyGame, valueGame in enumerate(gameTypeList):
+        for keyStyle, valueStyle in enumerate(styleTypeList):
+            for keyEvent, valueEvent in enumerate(eventTypeList):
+                strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
+                print("game:", valueGame, " style:", valueStyle, " valuevnet:", valueEvent)
+                value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
+                value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
+                a1[strKey] = value_all
+                a2[strKey] = value_selected
+                pass
+
+    SaveFile("d:\\tmp\\all.json", a1)
+    SaveFile("d:\\tmp\\selected.json", a2)
+
+
+    print(str)
+
+    # gameTypeList = [5]  # 穿越火线不支持
+    # styleTypeList = [2, 3, 4, 5, 6, 7, 8]   # 素材风格
+    # eventTypeList = [0, 2, 3, 4, 5]   # 不包含 1 死亡
+
+
+    # GetEffectStyleIndex(5, 6, 0, True)
+
+    # GetScopeEffectStyleIdx(4, 5, 3)
+
+
+    # idx = 0
+    # value = 602
+    # if ((int)(value / 100) == 6):
+    #     idx = value % 100
+    # print(idx)
+    #
+    # print(value/100)
+
+    # # 1 普通模式
+    # for gameKey, gameValue in enumerate(gameTypeList):
+    #     # print(cGame[gameValue])
+    #     for styleKey, styleValue in enumerate(cGame[gameValue]):
+    #
+    #         print("----------------")
+    #         print(styleValue)
+
+        # print("i:", i , " val:", val)
+
+
+    # 2 精选模式
+
+
+    # # test case
+    # match = [0, 0, 2, 5]
+    # match2 = [3, 5, 2,]
+    # mmm = MergeList(match, match2)
+    # print("mm:", mmm)
+    # select = False
+    # gameType = 4
+    # styleType = 6
+    #
+    # m1 = MergeList(cGame[gameType], cEvent[2])
+    # if(select):
+    #     m1 = cScope[1]
+    # print("m1:", m1)
 
 
 
