@@ -23,8 +23,20 @@ def GetDirs(path_k):
             mydict["fullname"] = f
             dirs.append(mydict)
         return dirs
- 
- 
+
+
+def GetFiles(path_k):
+    paths = os.walk(path_k)
+    files = []
+    for path, dir_lst, file_lst in paths:
+        # print("dir_cnt:", len(dir_lst))
+        # print("file_cnt:", len(file_lst))
+        for dir_name in file_lst:
+            f = os.path.join(path, dir_name)
+            files.append(f)
+        return files
+    return files
+
 def zip_all_files(dir):
     dirs = GetDirs(dir)
     for i, val in enumerate(dirs):
@@ -44,19 +56,41 @@ def remove_folder(path):
                 remove_folder(os.path.join(path, filename))
             os.rmdir(path)
 
+def unzip_file(zip_file, dstPath):
+    if not os.path.exists(dstPath):
+        os.makedirs(dstPath)  # 创建路径
+
+    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+        zip_ref.extractall(dstPath)
 
 if __name__ == '__main__':
 
     #
     # dst = "D:\\work\\dexuan\\2501\\dst"
     dst = "D:\\work\\stella\\12-09\\dst"
-    styles = GetDirs(dst)
+
+    # 压缩
+    # styles = GetDirs(dst)
+    # for i, val in enumerate(styles):
+    #     zip_all_files(val["fullname"])
+    #     print("style fullname:", val["fullname"])
+
+    # 解压
+    src = "D:\\tmp\\src"
+    dst = "d:\\tmp\\dst"
+    styles = GetDirs(src)
+    cnt = 0
     for i, val in enumerate(styles):
-        zip_all_files(val["fullname"])
-        print("style fullname:", val["fullname"])
-
-
-
+        # zip_all_files(val["fullname"])
+        styleShortName= val["name"]
+        styleFullName = val["fullname"]
+        # print("style fullname:", styleFullName)
+        styleZips = GetFiles(styleFullName)
+        for key, val in enumerate(styleZips):
+            styleDst = dst + "\\" + styleShortName
+            unzip_file(val, styleDst)
+            cnt += 1
+            print("unzip file:", val, " cnt:", cnt, "styleDst:", styleDst)
     # zip lang
 
     print("finish")

@@ -189,7 +189,7 @@ def checkDst(dstPath, LangtoColumn):
     pass
 
 if __name__ == '__main__':
-    playDst = "D:\\work\\dexuan\\2501\\play111\\"
+    playDst = "D:\\work\\dexuan\\2501\\play_test\\"
 
     excelFile = playDst + "play_2501.xlsx"
     audioPath = playDst + "audio"
@@ -209,31 +209,57 @@ if __name__ == '__main__':
 
 
 
-        "German": [4, "德语"],
-        "French": [5, "法语"],
-        "Polish": [6, "波兰语"],
-        "Jap": [7, "日本语"],
-        "Span": [8, "西班牙语"],
-        "Itali": [9, "意大利语"],
-        "Arabic": [10, "阿拉伯语"],
-        "CnTradition": [11, "繁体中文"],
-        "PortugueseEurope": [12, "葡萄牙语"],
-        "Korean": [13, "韩语"],
-        "Norwegian": [14, "挪威语"],
-        "Hung": [15, "匈牙利语"],
-        "Czech": [16, "捷克语"],
-        "Slovak": [17, "斯洛伐克语"],
-        "Romanian": [18, "罗马尼亚语"],
-        "Dutch": [19, "荷兰语"],
-        "Swedish": [20, "瑞典语"],
-        "Croatian": [21, "克罗地亚语"],
-        "Finnish": [22, "芬兰语"],
-        "Turkish": [23, "土耳其语"],
-        "Ukra": [24, "乌克兰语"],
-        "Danish": [25, "丹麦语"],
-        "PortugueseBrazil": [26, "巴西葡萄牙语"],
-        "Greek": [27, "希腊语"],
-        "Russian": [28, "俄语"],
+        # "German": [4, "德语"],
+        # "French": [5, "法语"],
+        # "Polish": [6, "波兰语"],
+        # "Jap": [7, "日本语"],
+        # "Span": [8, "西班牙语"],
+        # "Itali": [9, "意大利语"],
+        # "Arabic": [10, "阿拉伯语"],
+        # "CnTradition": [11, "繁体中文"],
+        # "PortugueseEurope": [12, "葡萄牙语"],
+        # "Korean": [13, "韩语"],
+        # "Norwegian": [14, "挪威语"],
+        # "Hung": [15, "匈牙利语"],
+        # "Czech": [16, "捷克语"],
+        # "Slovak": [17, "斯洛伐克语"],
+        # "Romanian": [18, "罗马尼亚语"],
+        # "Dutch": [19, "荷兰语"],
+        # "Swedish": [20, "瑞典语"],
+        # "Croatian": [21, "克罗地亚语"],
+        # "Finnish": [22, "芬兰语"],
+        # "Turkish": [23, "土耳其语"],
+        # "Ukra": [24, "乌克兰语"],
+        # "Danish": [25, "丹麦语"],
+        # "PortugueseBrazil": [26, "巴西葡萄牙语"],
+        # "Greek": [27, "希腊语"],
+        # "Russian": [28, "俄语"],
+
+        "de": [4, "德语"],
+        "fr": [5, "法语"],
+        "pl": [6, "波兰语"],
+        "jp": [7, "日本语"],
+        "es": [8, "西班牙语"],
+        "it": [9, "意大利语"],
+        "ar": [10, "阿拉伯语"],
+        "tc": [11, "繁体中文"],
+        "pt": [12, "葡萄牙语"],
+        "kr": [13, "韩语"],
+        "no": [14, "挪威语"],
+        "hu": [15, "匈牙利语"],
+        "cs": [16, "捷克语"],
+        "sk": [17, "斯洛伐克语"],
+        "ro": [18, "罗马尼亚语"],
+        "nl": [19, "荷兰语"],
+        "sv": [20, "瑞典语"],
+        "hr": [21, "克罗地亚语"],
+        "fi": [22, "芬兰语"],
+        "tr": [23, "土耳其语"],
+        "ua": [24, "乌克兰语"],
+        "dk": [25, "丹麦语"],
+        "br": [26, "巴西葡萄牙语"],
+        "gr": [27, "希腊语"],
+        "ru": [28, "俄语"],
     }
 
     # for i, (lang, value) in enumerate(LangtoColumn.items()):
@@ -242,6 +268,7 @@ if __name__ == '__main__':
     #     print("lang:", lang, " col:", value[0], " audioFile:", audioLangPath, " langDstPath:", langDstPath)
     #     procData(excelFile, langDstPath, audioLangPath, value[0])
 
+    dstPath = "d:\\tmp\\12"
     checkDst(dstPath, LangtoColumn)
     # PrintFile("D:\\tmp\\slogan.dat")
 

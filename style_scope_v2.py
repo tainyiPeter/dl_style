@@ -264,7 +264,7 @@ if __name__ == '__main__':
 
     # test case
     match = [0, 0, 2, 5]
-    match2 = [3,5, 2,]
+    match2 = [3, 5, 2,]
     mmm = MergeList(match, match2)
     print("mm:", mmm)
     select = False
@@ -276,12 +276,7 @@ if __name__ == '__main__':
         m1 = cScope[1]
     print("m1:", m1)
 
-    # print(cGame[4])
 
-    # for i in enumerate(match):
-    #     print (cGame["APEX"])
-    #     break
-    #     # print(i, ' ', i[1])
 
 
     pass

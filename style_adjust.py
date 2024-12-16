@@ -319,6 +319,7 @@ if __name__ == '__main__':
     # proc_audio_first(src_audio_first, dst)
     # proc_audio_second(src_audio_second, dst)
 
+    dst = "d:\\tmp\\dst"
     checkDst(dst)
 
 
