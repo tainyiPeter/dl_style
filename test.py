@@ -36,9 +36,10 @@ if __name__ == '__main__':
     # 假设有一个名为data.json的文件
     json_file_path = 'D:\\tmp\\kr.zip'
 
-    sha256 = calculate_file_sha256(json_file_path)
+    tmpcnt = 0
 
-    print(sha256)
+    tmpcnt +=1
+    print(tmpcnt)
 
 
 
