@@ -2,6 +2,8 @@ import shutil
 
 import json
 
+import hashlib
+
 
 
 c = {}
@@ -12,17 +14,33 @@ def test():
 
     return c1
 
+
+def calculate_file_sha256(file_path):
+    """
+    计算文件的SHA-256哈希值。
+    :param file_path: 文件路径
+    :return: 文件的SHA-256哈希值
+    """
+    sha256 = hashlib.sha256()
+
+    with open(file_path, 'rb') as file:
+        while True:
+            data = file.read(65536)
+            if not data:
+                break
+            sha256.update(data)
+
+    return sha256.hexdigest()
+
 if __name__ == '__main__':
     # 假设有一个名为data.json的文件
-    json_file_path = 'D:\\tmp\\styleFile\\beb_scope.json'
+    json_file_path = 'D:\\tmp\\kr.zip'
 
-    # 读取并解析JSON文件
-    with open(json_file_path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
+    sha256 = calculate_file_sha256(json_file_path)
 
-    # 现在data变量包含了JSON文件中的数据，可以按需使用
-    print("cnt:", len(data))
-    print(data["7"])
+    print(sha256)
+
+
 
 
 
