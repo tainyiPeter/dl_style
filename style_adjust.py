@@ -11,6 +11,7 @@ def FetchDigit(txt):
         return digit
 
     return 0
+
 def GetFiles(path_k):
     paths = os.walk(path_k)
     files = []
@@ -184,9 +185,9 @@ def proc_video_second(src, dst):
     pass
 
 def proc_audio_in_file(srcDir, dstDir, dstName, idx):
-    print("proc_audio_in_file src", srcDir, "dst:", dstDir, "idx:", idx)
-    files = GetFiles(srcDir)
-    for i, val in enumerate(files):
+    print("proc_audio_in_file src", srcDir, "    files = GetFiles(srcDir)
+    for i, val in enumerate(files):dst:", dstDir, "idx:", idx)
+
         srcFileName = os.path.basename(val)
         strNum = FetchDigit(srcFileName)
         nNum = int(strNum) + idx
