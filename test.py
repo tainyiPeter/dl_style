@@ -19,15 +19,16 @@ def t1(str):
     print("ook")
     return km
 if __name__ == '__main__':
-    dict = {
-        "a": [1]
+    dictGood = {
+
+        "6": [42,3],
+        "7": [6],
+        "8": [8]
     }
 
-    k = t1("3333")
-
-    print(k)
-
-    print("hello")
+    for idx, value in dictGood.items():
+        for i in value:
+            print("idx:", idx, " value:", i)
     pass
 
 

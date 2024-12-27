@@ -43,3 +43,7 @@ def SaveDictFile(strFileName, c):
         # print(strJson)
         file.write(strJson)
     pass
+
+def CheckAndCreatePath(dstPath):
+    if not os.path.exists(dstPath):
+        os.makedirs(dstPath)  # 创建路径

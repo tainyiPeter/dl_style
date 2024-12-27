@@ -21,7 +21,7 @@ def GetGameEvent(strEvent):
         "assist": 2,
         "knock down": 3,
         "defeat": 4,
-        "victory": 5
+        "victory": 5,
     }
 
     return dict.get(strEvent)
@@ -38,7 +38,6 @@ def GetGameType(strType):
         "APEX": 8,
         "FORTNITE": 9,
         "WORLD_OF_WARSHIPS": 10,
-        "all": 100
     }
 
     return dict.get(strType)

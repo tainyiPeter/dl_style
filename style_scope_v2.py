@@ -24,6 +24,8 @@ colGame_NARAKA = 10
 colGame_APEX = 11
 colGame_WARSHIPS = 12
 
+
+selectedMode = 2
 def GetStyleIndex(strName, bSecond):
     # print("---------strName：", strName)
     l = strName.split("_")
@@ -103,7 +105,7 @@ def ParseGame(fileName, dstPath):
     df2 = pd.read_excel(fileName, sheet_name=sheet2)
     ParseGameDetails(c, df2, True)
 
-    SaveDictFile(dstPath + "\\games.json", c)
+    # SaveDictFile(dstPath + "\\games.json", c)
     return c
 
 def ParseEventDetails(c, df, bSecond):
@@ -116,8 +118,14 @@ def ParseEventDetails(c, df, bSecond):
         strStyleType = df.iloc[row, colStyle].strip()
         styleIndex = 100 * GetStyleType(strStyleType) + styleIndex
         strEvent = df.iloc[row, colEvent].strip()
-        gEvent = GetGameEvent(strEvent)
-        update_dict(c, gEvent, styleIndex)
+        eventType = GetGameEvent(strEvent)
+
+        if eventType is None:
+            print(f"parese event failed, row:{row}, bSecond:{bSecond}")
+
+        update_dict(c, eventType, styleIndex)
+
+
 def ParseEvent(fileName, dstPath):
     c = {}
     df = pd.read_excel(fileName, sheet_name=sheet1)
@@ -126,7 +134,7 @@ def ParseEvent(fileName, dstPath):
     df2 = pd.read_excel(fileName, sheet_name=sheet2)
     ParseEventDetails(c, df2, True)
 
-    SaveDictFile(dstPath + "\\events.json", c)
+    # SaveDictFile(dstPath + "\\events.json", c)
     return c
 
 def ParseScopeDetail(c, df, bSecond):
@@ -135,6 +143,7 @@ def ParseScopeDetail(c, df, bSecond):
     # row_count = 3
     for row in range(1, row_count):
         # print("---------------------------------------------------------")
+        styleIndex = 0
         strName = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
         styleIndex = GetStyleIndex(strName, bSecond)
         scope = df.iloc[row, colScope]
@@ -152,14 +161,16 @@ def ParseScopeDetail(c, df, bSecond):
 
         strEvent = df.iloc[row, colEvent].strip()
         eventType = GetGameEvent(strEvent)
-        styleIndex += 10000 * eventType
+        if eventType is None:
+            print(f"parse scope failed, row:{row}, bSecond:{bSecond}")
 
         for game_col in range(colGame_LOL, colGame_WARSHIPS + 1):
             strGame = df.iloc[row, game_col]  # 读取第row行，第column列的数据
             gameType = CheckGameType(game_col, strGame)
             if (gameType > 0):
-                tmpIdx = styleIndex + 100000 * gameType
-                update_dict(c, gameType, tmpIdx)
+                num = styleIndex + 10000 * gameType
+                update_dict(c, eventType, num)
+
 
 def parseScope(fileName, dstPath):
     c = {}
@@ -169,7 +180,7 @@ def parseScope(fileName, dstPath):
     df2 = pd.read_excel(fileName, sheet_name=sheet2)
     ParseScopeDetail(c, df2, True)
 
-    SaveDictFile(dstPath+"\\effect_scope.json", c)
+    # SaveDictFile(dstPath+"\\effect_scope.json", c)
 
     return c
 
@@ -184,16 +195,17 @@ def GetStylelist(srcList, type):
 
 def GetScopeEffectStyleIdx(gameType, styleType, eventType):
     ret = []
-    srcList = cScope[gameType]
+    srcList = cScope[eventType]
     for key, value in enumerate(srcList):
         sType = (int)(value / 1000) % 10
-        eType = (int)(value / 10000) % 10
+        gType = (int)(value / 10000) % 100
         # gType = (int)(value / 100000) % 100
 
-        if(sType == styleType and eType == eventType):
+        if(sType == styleType and gType == gameType):
             styleIdx = int(value % 1000)
             styleIdx = styleIdx % 100
-            ret.append(styleIdx)
+            if styleIdx not in ret:
+                ret.append(styleIdx)
 
     return ret
 
@@ -207,20 +219,66 @@ def GetEffectStyleIndex(gameType, styleType, eventType, bSelected):
         ret = GetStylelist(ret, styleType)
         return ret
 
+# 万能素材
+def AppendGoodStyle(dictGame, dictEvent, dictScope):
+    dictGood = {
+        "2": [9],
+        "3": [5],
+        "4": [1],
+        "5": [1],
+        "6": [42,3],
+        "7": [6],
+        "8": [8]
+    }
+
+    gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10]  # 穿越火线不支持
+    eventTypeList = [0, 2, 3, 4, 5]  # 不包含 1 死亡
+
+    for key, value in dictGood.items():
+        for detail in value:
+            StyleIndex = int(key) * 100 + detail
+            for gType in gameTypeList:
+                update_dict(dictGame, gType, StyleIndex)
+            for eType in eventTypeList:
+                update_dict(dictEvent, eType, StyleIndex)
+
+    for eType in eventTypeList:
+        for gType in gameTypeList:
+            for key, value in dictGood.items():
+                for detail in value:
+                    StyleIdxEffct = 100 * 1 + detail + int(key) * 1000 + gType * 10000
+                    StyleIdxWord = 100 * 2 + detail + int(key) * 1000 + gType * 10000
+
+                    update_dict(dictScope, eType, StyleIdxEffct)
+                    update_dict(dictScope, eType, StyleIdxWord)
+    pass
+
 def MergeList(l1, l2):
     return list(set(l1) & set(l2))
 
 if __name__ == '__main__':
     dstPath = "d:\\tmp\\styleFile"
-    excelFile = "d:\\tmp\\素材拆分1220.xlsx"
+    excelFile = "d:\\tmp\\素材拆分1226.xlsx"
+
+    CheckAndCreatePath(dstPath)
 
     global cGame
     global cEvent
     global cScope
 
+    cGame = {}
+    cEvent = {}
+    cScope = {}
     cGame = ParseGame(excelFile, dstPath)
     cEvent = ParseEvent(excelFile, dstPath)
     cScope = parseScope(excelFile, dstPath)
+
+    AppendGoodStyle(cGame, cEvent, cScope)
+
+    # save to disk
+    SaveDictFile(dstPath + "\\games.json", cGame)
+    SaveDictFile(dstPath + "\\events.json", cEvent)
+    SaveDictFile(dstPath + "\\effect_scope.json", cScope)
 
     gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10]  # 穿越火线不支持
     styleTypeList = [2, 3, 4, 5, 6, 7, 8]  # 素材风格
@@ -241,62 +299,3 @@ if __name__ == '__main__':
     SaveDictFile("d:\\tmp\\all.json", a1)
     SaveDictFile("d:\\tmp\\selected.json", a2)
     print("finish")
-
-    # gameTypeList = [5]  # 穿越火线不支持
-    # styleTypeList = [2, 3, 4, 5, 6, 7, 8]   # 素材风格
-    # eventTypeList = [0, 2, 3, 4, 5]   # 不包含 1 死亡
-
-
-    # GetEffectStyleIndex(5, 6, 0, True)
-
-    # GetScopeEffectStyleIdx(4, 5, 3)
-
-
-    # idx = 0
-    # value = 602
-    # if ((int)(value / 100) == 6):
-    #     idx = value % 100
-    # print(idx)
-    #
-    # print(value/100)
-
-    # # 1 普通模式
-    # for gameKey, gameValue in enumerate(gameTypeList):
-    #     # print(cGame[gameValue])
-    #     for styleKey, styleValue in enumerate(cGame[gameValue]):
-    #
-    #         print("----------------")
-    #         print(styleValue)
-
-        # print("i:", i , " val:", val)
-
-
-    # 2 精选模式
-
-
-    # # test case
-    # match = [0, 0, 2, 5]
-    # match2 = [3, 5, 2,]
-    # mmm = MergeList(match, match2)
-    # print("mm:", mmm)
-    # select = False
-    # gameType = 4
-    # styleType = 6
-    #
-    # m1 = MergeList(cGame[gameType], cEvent[2])
-    # if(select):
-    #     m1 = cScope[1]
-    # print("m1:", m1)
-
-
-    # df = pd.read_excel(excelFile, sheet_name=sheet1)
-    # row_count = df.shape[0]
-    # #strName = df.iloc[11, colGame_DOTA2].strip()  # 读取第row行，第column列的数据
-    # strName = df.iloc[11, colGame_TANKS]
-    # if(is_nan(strName)):
-    #     print( "not ")
-    # else:
-    #     print(("ssss"))
-    # print(strName)
-
-    pass
