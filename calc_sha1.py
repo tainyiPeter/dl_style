@@ -94,7 +94,8 @@ if __name__ == "__main__":
     #     "sha1":[]
     # }
 
-    stylePath = "D:\\tmp\\dst"
+    stylePath = "D:\\work\\stella\\01-15\\test\\dst"
+
     dirs = GetDirs(stylePath)
 
 
@@ -102,10 +103,8 @@ if __name__ == "__main__":
         "name":"lang",
         "fullname":langPath
     }
-    dirs.append(langdict)
-    # dirs["name"] = "lang"
-    # dirs["fullname"] = langPath
-    # print(dirs)
+    # dirs.append(langdict)
+
 
     dict = {}
     for pathKey, pathValue in enumerate(dirs):
@@ -127,5 +126,5 @@ if __name__ == "__main__":
         }
         dict[style_name] = a
 
-    SaveDataToExcel('d:\\tmp\\cloud_sha256.xlsx', dict)
+    SaveDataToExcel('d:\\tmp\\cloud_sha256_2025_01_22.xlsx', dict)
     print("finish")

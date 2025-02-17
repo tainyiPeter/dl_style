@@ -185,9 +185,9 @@ def proc_video_second(src, dst):
     pass
 
 def proc_audio_in_file(srcDir, dstDir, dstName, idx):
-    print("proc_audio_in_file src", srcDir, "    files = GetFiles(srcDir)
-    for i, val in enumerate(files):dst:", dstDir, "idx:", idx)
-
+    print("proc_audio_in_file src", srcDir, "dst:", dstDir, "idx:", idx)
+    files = GetFiles(srcDir)
+    for i, val in enumerate(files):
         srcFileName = os.path.basename(val)
         strNum = FetchDigit(srcFileName)
         nNum = int(strNum) + idx
@@ -303,12 +303,12 @@ def checkDst(dst):
 
 if __name__ == '__main__':
     # parentPath = "D:\\work\\dexuan\\2501\\1209-test"
-    parentPath = "D:\\work\\stella\\12-09\\test_1"
+    parentPath = "D:\\work\\stella\\01-15\\test"
 
 
     dst = parentPath + "\\dst"
     #
-    # # 处理视频
+    # 处理视频
     # src_video_first = parentPath + "\\video\\first"
     # src_video_second = parentPath + "\\video\\second"
     # proc_video_first(src_video_first, dst)
@@ -320,11 +320,11 @@ if __name__ == '__main__':
     # proc_audio_first(src_audio_first, dst)
     # proc_audio_second(src_audio_second, dst)
 
-    dst = "d:\\tmp\\dst"
+
     checkDst(dst)
 
 
-    print("finish111")
+    print("finish style adjust")
 
 
 

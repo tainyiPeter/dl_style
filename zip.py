@@ -67,33 +67,33 @@ if __name__ == '__main__':
 
     #
     # dst = "D:\\work\\dexuan\\2501\\dst"
-    dst = "D:\\work\\stella\\12-09\\dst"
+    dst = "D:\\work\\stella\\01-15\\test\\dst"
 
     # 压缩
-    # styles = GetDirs(dst)
-    # for i, val in enumerate(styles):
-    #     zip_all_files(val["fullname"])
-    #     print("style fullname:", val["fullname"])
+    styles = GetDirs(dst)
+    for i, val in enumerate(styles):
+        zip_all_files(val["fullname"])
+        print("style fullname:", val["fullname"])
 
     # 解压
-    src = "D:\\tmp\\src"
-    dst = "d:\\tmp\\dst"
-    styles = GetDirs(src)
-    cnt = 0
-    for i, val in enumerate(styles):
-        # zip_all_files(val["fullname"])
-        styleShortName= val["name"]
-        styleFullName = val["fullname"]
-        # print("style fullname:", styleFullName)
-        styleZips = GetFiles(styleFullName)
-        for key, val in enumerate(styleZips):
-            styleDst = dst + "\\" + styleShortName
-            unzip_file(val, styleDst)
-            cnt += 1
-            print("unzip file:", val, " cnt:", cnt, "styleDst:", styleDst)
-    # zip lang
+    # src = "D:\\tmp\\src"
+    # dst = "d:\\tmp\\dst"
+    # styles = GetDirs(src)
+    # cnt = 0
+    # for i, val in enumerate(styles):
+    #     # zip_all_files(val["fullname"])
+    #     styleShortName= val["name"]
+    #     styleFullName = val["fullname"]
+    #     # print("style fullname:", styleFullName)
+    #     styleZips = GetFiles(styleFullName)
+    #     for key, val in enumerate(styleZips):
+    #         styleDst = dst + "\\" + styleShortName
+    #         unzip_file(val, styleDst)
+    #         cnt += 1
+    #         print("unzip file:", val, " cnt:", cnt, "styleDst:", styleDst)
+    # # zip lang
 
-    print("finish")
+    print("finish zip")
 
 
 

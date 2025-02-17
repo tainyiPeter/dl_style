@@ -258,7 +258,7 @@ def MergeList(l1, l2):
 
 if __name__ == '__main__':
     dstPath = "d:\\tmp\\styleFile"
-    excelFile = "d:\\tmp\\素材拆分1226.xlsx"
+    excelFile = "d:\\tmp\\素材拆分1230.xlsx"
 
     CheckAndCreatePath(dstPath)
 
