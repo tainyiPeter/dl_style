@@ -1,138 +1,59 @@
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
 
-# # 生成密钥对
-# private_key = rsa.generate_private_key(
-#     public_exponent=65537,
-#     key_size=2048,
-#     backend=default_backend()
-# )
-# public_key = private_key.public_key()
-#
-#
-# # 签名数据
-# message = b"Hello, World!"
-# signature = private_key.sign(
-#     message,
-#     padding.PSS(
-#         mgf=padding.MGF1(hashes.SHA256()),
-#         salt_length=padding.PSS.MAX_LENGTH
-#     ),
-#     hashes.SHA256()
-# )
+import base64
 
-def en_private(message):
-    # 生成密钥对
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
-    )
-    public_key = private_key.public_key()
+# 在线验证
+# https://config.net.cn/tools/Sha256WithRSA-Sign.html
 
-    # 签名数据
-    #message = b"Hello, World!"
+def lzSign(strMsg):
+    # 加载私钥（PEM格式）
+    with open("private.pem", "rb") as key_file:
+        private_key = serialization.load_pem_private_key(
+            key_file.read(),
+            password=None,  # 如果私钥有密码，在此处输入
+            backend=default_backend()
+        )
+
+    data = bytes(strMsg, 'utf-8')
     signature = private_key.sign(
-        message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH
-        ),
+        data,
+        padding.PKCS1v15(),
         hashes.SHA256()
     )
+
     return signature
 
-def de_public(message):
-    # 生成密钥对
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
-    )
-    public_key = private_key.public_key()
 
-    plaintext = public_key.decrypt(
-        message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
-    )
-    return plaintext
-
-if __name__ == '__main__':
-    message = b"Hello, World!"
-    abc = en_private(message)
-    xyz = de_public(abc)
-    print("xyz:", xyz)
-    # # 生成密钥对
-    # private_key = rsa.generate_private_key(
-    #     public_exponent=65537,
-    #     key_size=2048,
-    #     backend=default_backend()
-    # )
-    # public_key = private_key.public_key()
+# 示例使用
+if __name__ == "__main__":
+    # # 加载私钥（PEM格式）
+    # with open("private.pem", "rb") as key_file:
+    #     private_key = serialization.load_pem_private_key(
+    #         key_file.read(),
+    #         password=None,  # 如果私钥有密码，在此处输入
+    #         backend=default_backend()
+    #     )
     #
+    # # 需要签名的数据
+    # data = b"xwfsfs"
     #
-    # # 签名数据
-    # message = b"Hello, World!"
+    # # 使用SHA256和PKCS#1 v1.5填充生成签名
     # signature = private_key.sign(
-    #     message,
-    #     padding.PSS(
-    #         mgf=padding.MGF1(hashes.SHA256()),
-    #         salt_length=padding.PSS.MAX_LENGTH
-    #     ),
+    #     data,
+    #     padding.PKCS1v15(),
     #     hashes.SHA256()
     # )
-    #
-    # signText = str(signature)
-    # print("sign:", signText)
-    # print("finish ...")
-    #
-    # # 验证签名
-    # try:
-    #     private_key.public_key().verify(
-    #         signature,
-    #         message,
-    #         padding.PSS(
-    #             mgf=padding.MGF1(hashes.SHA256()),
-    #             salt_length=padding.PSS.MAX_LENGTH
-    #         ),
-    #         hashes.SHA256()
-    #     )
-    #     print("Signature is valid.")
-    # except Exception as e:
-    #     print("Signature is invalid.")
-    #
-    # # test
-    # message123 = b"xxxx!"
-    # # 公钥加密数据
-    # ciphertext = public_key.encrypt(
-    #     message123,
-    #     padding.OAEP(
-    #         mgf=padding.MGF1(algorithm=hashes.SHA256()),
-    #         algorithm=hashes.SHA256(),
-    #         label=None
-    #     )
-    # )
-    #
-    # # 私钥解密数据
-    # plaintext = private_key.decrypt(
-    #     ciphertext,
-    #     padding.OAEP(
-    #         mgf=padding.MGF1(algorithm=hashes.SHA256()),
-    #         algorithm=hashes.SHA256(),
-    #         label=None
-    #     )
-    # )
-    # print("Decrypted message:", plaintext)  # 输出应为原始消息 b"Hello, World!"
 
-    # # 假设你有一个字节串
-    # binary_data = b'\xe4\xbd\xa0\xe5\xa5\xbd'  # 这是"你好"的UTF-8编码
-    #
-    # # 使用decode()方法转换为字符串
-    # text = binary_data.decode('utf-8')
-    # print(text)  # 输出: 你好
+    # 需要签名的数据
+    # data = b"xwfsfs"
+    strMsg = "xwfsfs"
+    signature = lzSign(strMsg)
+
+    print("Signature:", signature.hex())
+
+    encoded_data = base64.b64encode(signature)
+    print("Base64 编码结果:", encoded_data.decode("utf-8"))  # 转为字符串输出
+

@@ -68,16 +68,24 @@ def verify_signature(message, signature, public_key):
     except Exception as e:
         return False
 
+
+
 # 示例使用
 if __name__ == "__main__":
     # 生成密钥对
-    private_key, public_key = generate_keys()
+    #private_key, public_key = generate_keys()
 
     # 可选：保存密钥到文件
     #save_keys_to_file(private_key, public_key)
 
     # 消息
-    message = b"This is a secret message"
+    strMsg = "This is a secret message"
+    bstrMsg = bytes(strMsg, 'utf-8')
+    # message = bytes(strMsg, 'utf-8')
+    message = b'This is a secret message'
+
+    print(f"strMsg:{bstrMsg.hex()}")
+    print(f"message:{message.hex()}")
     #
     # # 签名消息
     # signature = sign_message(message, private_key)
@@ -91,6 +99,12 @@ if __name__ == "__main__":
     # print(f"Signature valid: {is_valid}")
     #
     # 可选：从文件加载密钥并验证签名
-    loaded_private_key, loaded_public_key = load_keys_from_file()
-    is_loaded_valid = verify_signature(message, signature, loaded_public_key)
-    print(f"Signature valid after loading keys: {is_loaded_valid}")
+    private_key, public_key = load_keys_from_file()
+    # 签名消息
+    signature = sign_message(message, private_key)
+    print(f"sign: {signature.hex()}")
+
+    sign2 = sign_message(message, private_key)
+    print(f"sign: {sign2.hex()}")
+    # is_loaded_valid = verify_signature(message, signature, public_key)
+    # print(f"Signature valid after loading keys: {is_loaded_valid}")

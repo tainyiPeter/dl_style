@@ -6,40 +6,32 @@ import httplib2
 import time
 import base64
 
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+
 
 sign = "sjdxfnqogbzoun13d971ckh8p"
 
 
-# 生成密钥对
-def gen_public_key():
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
-    )
-    public_key = private_key.public_key()
+def LzSign(strMsg):
+    # 加载私钥（PEM格式）
+    with open("private.pem", "rb") as key_file:
+        private_key = serialization.load_pem_private_key(
+            key_file.read(),
+            password=None,  # 如果私钥有密码，在此处输入
+            backend=default_backend()
+        )
 
-    return public_key
-def Sha256withRSA(message):
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
-    )
+    data = bytes(strMsg, 'utf-8')
     signature = private_key.sign(
-        message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH
-        ),
+        data,
+        padding.PKCS1v15(),
         hashes.SHA256()
     )
-
-    return signature
+    encoded_data = base64.b64encode(signature)
+    return encoded_data
 
 # legion zone 下载签名
 def CreateLzSign(paramData):
@@ -54,14 +46,10 @@ def CreateLzSign(paramData):
         idx += 1
         if(idx < total):
             strContent += "&"
-    print("before base64:", strContent)
-
-    signature = Sha256withRSA(strContent.encode("utf-8"))
-
-    #base64.b64encode(signature).decode("utf-8")
-    signature_b64 = base64.b64encode(signature).decode("utf-8")
-    print("签名（Base64）:", signature_b64)
-    return signature_b64
+    print(f"before sign:{strContent}")
+    signature = LzSign(strContent)
+    print(f"after sign:{signature}")
+    return signature
     #
     # # 原始数据（字符串或字节）
     # data = dataRsa.encode("utf-8")  # 转为字节
