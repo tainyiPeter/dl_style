@@ -7,6 +7,11 @@ import uuid
 import time
 from urllib.parse import urlencode
 
+
+# legion zone 素材下载ceshi8脚本
+# 文档地址：
+# https://km.xpaas.lenovo.com/pages/viewpage.action?pageId=464204410
+
 appId = "1593389727517312"
 
 # http test
@@ -87,9 +92,6 @@ def GetList():
         "sign_type": "RSA2",
         "timestamp": str(timeStamp)
     }
-    # print(paramList)
-
-
 
     sign = HttpUtils.CreateLzSign(paramList)
     paramList["sign"] = sign
@@ -107,11 +109,42 @@ def GetList():
     #OutPut.HttpRespOut(info, content, False)
     #jsonData = json.loads(content)
 
-    pass
+
+
+def GetData(classifyId, pageIdx, pageSize):
+    reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-legionzone/api/v1/getClassifyDatas"
+    uuid_str = str(uuid.uuid4())
+    timeStamp = int(time.time()) * 1000
+    paramList = {
+        "appId": appId,
+        "nonce": uuid_str,
+        "sign_type": "RSA2",
+        "timestamp": str(timeStamp),
+        "classifyId": str(classifyId),
+        "page": str(pageIdx),
+        "pageSize": str(pageSize)
+    }
+
+    sign = HttpUtils.CreateLzSign(paramList)
+    paramList["sign"] = sign
+    reqUrl += "?"
+    reqUrl += urlencode(paramList)
+    print("requrl:", reqUrl)
+
+    # print(paramList)
+    http = httplib2.Http()
+    response, content = http.request(reqUrl, "GET")
+    print("----------------------------------------------------------------")
+    print('Status:', response.status)
+    print('Content:', content.decode('utf-8'))
+
+    # OutPut.HttpRespOut(info, content, False)
+    # jsonData = json.loads(content)
 
 if __name__ == '__main__':
     # dl_auth("client_credentials", "1593389727517312", "d248f803532a4d009c4bdecfb5bcd5cc")
-    GetList()
+    GetData(301, 1, 10)
+    #GetList()
     #get_test()
     # test()
     print("finish ...")
