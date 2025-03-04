@@ -5,6 +5,9 @@ import json
 import HttpUtils
 import uuid
 import time
+import os
+import mimetypes
+
 from urllib.parse import urlencode
 
 
@@ -64,9 +67,7 @@ def dl_auth(grant_type, cid, secret):
         "client_secret": secret,
     }
     http = httplib2.Http()
-
     strJsonBody = json.dumps(body)
-
     response, content = http.request(reqUrl, 'POST', body=strJsonBody, headers=headers)
 
     # 打印响应状态码和内容
@@ -80,6 +81,8 @@ def dl_auth(grant_type, cid, secret):
     # jsonDataF = json.dumps(jsonData, ensure_ascii=False, indent=1)
 
     # print(jsonDataF)
+
+
 
 
 def GetList():
@@ -97,17 +100,15 @@ def GetList():
     paramList["sign"] = sign
     reqUrl += "?"
     reqUrl += urlencode(paramList)
-    print("requrl:", reqUrl)
+    print(f"reqUrl:{reqUrl}")
 
     #print(paramList)
+    # reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-legionzone/api/v1/getClassifyList?appId=1593389727517312&nonce=aae3769c-d3f2-4c71-81c8-d200d0dc4763&sign_type=RSA2&timestamp=1741070251617&sign=ChlEO7xFT3jog%2BT1l7w%2BcjZwEQmXk%2FP%2BgBd7JCwt8KLORSWjJ1zoLOKOqLAxrf%2FRh1FJvR7rcA6thejdfSnrD9hhz46%2Bn0qBnigvc59iGqgV5nRPqR2LrOIN5i1sKnXA6ZcU0sFJYUmmMExflydUBMAcKnrcw9GtGUEKmPXZJ4g%3D"
     http = httplib2.Http()
     response, content = http.request(reqUrl,"GET")
     print("----------------------------------------------------------------")
     print('Status:', response.status)
     print('Content:', content.decode('utf-8'))
-
-    #OutPut.HttpRespOut(info, content, False)
-    #jsonData = json.loads(content)
 
 
 
@@ -132,6 +133,7 @@ def GetData(classifyId, pageIdx, pageSize):
     print("requrl:", reqUrl)
 
     # print(paramList)
+
     http = httplib2.Http()
     response, content = http.request(reqUrl, "GET")
     print("----------------------------------------------------------------")
@@ -140,10 +142,46 @@ def GetData(classifyId, pageIdx, pageSize):
 
     # OutPut.HttpRespOut(info, content, False)
     # jsonData = json.loads(content)
+    # print(jsonData)
+
+
+def upload_file(url, file_path):
+    # 获取文件的MIME类型
+    content_type, _ = mimetypes.guess_type(file_path)
+    if content_type is None:
+        content_type = 'application/octet-stream'
+
+    # 创建httplib2的Http对象
+    h = httplib2.Http()
+
+    headers = {
+        "Content-Type": "multipart/form-data",
+        "Authorization": "bearer 6de397e0-187e-4877-83b1-cdbab75dbe62"
+    }
+
+    # 读取文件内容
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+
+    # 构建multipart表单数据
+    body = {
+        'file': (os.path.basename(file_path), file_content, content_type)
+    }
+
+    # 发送POST请求
+    response, content = h.request(url, 'POST', body=body.encode(), headers=headers)
+
+    # 打印响应状态和内容
+    print('Response status:', response.status)
+    print('Response content:', content)
+
+uploadurl = "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile"
 
 if __name__ == '__main__':
+    filePath = "D:\\tmp\\se.bin"
+    upload_file(uploadurl, filePath)
     # dl_auth("client_credentials", "1593389727517312", "d248f803532a4d009c4bdecfb5bcd5cc")
-    GetData(301, 1, 10)
+    # GetData(301, 1, 10)
     #GetList()
     #get_test()
     # test()
