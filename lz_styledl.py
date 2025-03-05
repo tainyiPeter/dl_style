@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import httplib2
-import hashlib
 import json
 import HttpUtils
 import uuid
@@ -15,7 +14,10 @@ from urllib.parse import urlencode
 # 文档地址：
 # https://km.xpaas.lenovo.com/pages/viewpage.action?pageId=464204410
 
+
+grant_type = "client_credentials"
 appId = "1593389727517312"
+client_secret = "d248f803532a4d009c4bdecfb5bcd5cc"
 
 # http test
 def post_test():
@@ -66,6 +68,11 @@ def dl_auth(grant_type, cid, secret):
         "client_id": cid,
         "client_secret": secret,
     }
+
+    print(f"grant_type: {grant_type}")
+    print(f"client_id: {cid}")
+    print(f"client_secret: {secret}")
+
     http = httplib2.Http()
     strJsonBody = json.dumps(body)
     response, content = http.request(reqUrl, 'POST', body=strJsonBody, headers=headers)
@@ -82,7 +89,12 @@ def dl_auth(grant_type, cid, secret):
 
     # print(jsonDataF)
 
+def GetAuthToken():
+    dl_auth(grant_type, appId, client_secret)
 
+    token = ""
+
+    return token
 
 
 def GetList():
@@ -175,16 +187,63 @@ def upload_file(url, file_path):
     print('Response status:', response.status)
     print('Response content:', content)
 
-uploadurl = "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile"
+
+def upload_file(url, file_path, token_auth, field_name='file', extra_fields=None):
+    # 创建Http对象
+    http = httplib2.Http()
+
+    # 定义唯一的boundary
+    boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+    # 构建请求体
+    body = []
+
+    # 添加普通字段
+    if extra_fields:
+        for key, value in extra_fields.items():
+            body.append(f'--{boundary}\r\n'.encode('utf-8'))
+            body.append(
+                f'Content-Disposition: form-data; name="{key}"\r\n\r\n'.encode('utf-8')
+            )
+            body.append(f'{value}\r\n'.encode('utf-8'))
+
+    # 添加文件字段
+    body.append(f'--{boundary}\r\n'.encode('utf-8'))
+    body.append(
+        f'Content-Disposition: form-data; name="{field_name}"; filename="{file_path}"\r\n'.encode('utf-8')
+    )
+    body.append('Content-Type: application/octet-stream\r\n\r\n'.encode('utf-8'))
+
+    # 读取文件内容（二进制模式）
+    with open(file_path, 'rb') as f:
+        body.append(f.read())
+    body.append(f'\r\n--{boundary}--\r\n'.encode('utf-8'))
+
+    # 合并所有部分
+    body = b''.join(body)
+
+    # 设置请求头
+    headers = {
+        'Content-Type': f'multipart/form-data; boundary={boundary}',
+        'Content-Length': str(len(body)),
+        'Authorization': f'bearer {token_auth}'
+    }
+
+    # 发送POST请求
+    response, content = http.request(
+        uri=url,
+        method='POST',
+        headers=headers,
+        body=body
+    )
+
+    return response, content
+
+
 
 if __name__ == '__main__':
     filePath = "D:\\tmp\\se.bin"
-    upload_file(uploadurl, filePath)
-    # dl_auth("client_credentials", "1593389727517312", "d248f803532a4d009c4bdecfb5bcd5cc")
-    # GetData(301, 1, 10)
-    #GetList()
-    #get_test()
-    # test()
+    GetAuthToken()
     print("finish ...")
 
 
