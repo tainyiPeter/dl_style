@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import httplib2
 import json
-import HttpUtils
+import sys
 import uuid
 import time
 import os
-import mimetypes
+import HttpUtils
+import utility
+import pandas as pd
 
 from urllib.parse import urlencode
 
@@ -14,6 +16,11 @@ from urllib.parse import urlencode
 # 文档地址：
 # https://km.xpaas.lenovo.com/pages/viewpage.action?pageId=464204410
 
+
+# 单个素材文件上传地址, 测试地址
+ZipUrl = "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile"
+# cecel文件上传地址
+ExcelUrl = "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/biz/file/se/uploadFile"
 
 grant_type = "client_credentials"
 appId = "1593389727517312"
@@ -105,9 +112,6 @@ def GetAuthToken():
     print("Status Code:", response.status)
     print("Response Content:", content.decode('utf-8'))
 
-
-
-
 def GetList():
     reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-legionzone/api/v1/getClassifyList"
     uuid_str = str(uuid.uuid4())
@@ -167,39 +171,7 @@ def GetData(classifyId, pageIdx, pageSize):
     # jsonData = json.loads(content)
     # print(jsonData)
 
-
-def upload_file(url, file_path):
-    # 获取文件的MIME类型
-    content_type, _ = mimetypes.guess_type(file_path)
-    if content_type is None:
-        content_type = 'application/octet-stream'
-
-    # 创建httplib2的Http对象
-    h = httplib2.Http()
-
-    headers = {
-        "Content-Type": "multipart/form-data",
-        "Authorization": "bearer 6de397e0-187e-4877-83b1-cdbab75dbe62"
-    }
-
-    # 读取文件内容
-    with open(file_path, 'rb') as f:
-        file_content = f.read()
-
-    # 构建multipart表单数据
-    body = {
-        'file': (os.path.basename(file_path), file_content, content_type)
-    }
-
-    # 发送POST请求
-    response, content = h.request(url, 'POST', body=body.encode(), headers=headers)
-
-    # 打印响应状态和内容
-    print('Response status:', response.status)
-    print('Response content:', content)
-
-
-def upload_file(url, file_path, token_auth, field_name='file', extra_fields=None):
+def upload_file(url, file_name, token_auth, field_name='file', extra_fields=None):
     # 创建Http对象
     http = httplib2.Http()
 
@@ -221,12 +193,12 @@ def upload_file(url, file_path, token_auth, field_name='file', extra_fields=None
     # 添加文件字段
     body.append(f'--{boundary}\r\n'.encode('utf-8'))
     body.append(
-        f'Content-Disposition: form-data; name="{field_name}"; filename="{file_path}"\r\n'.encode('utf-8')
+        f'Content-Disposition: form-data; name="{field_name}"; filename="{file_name}"\r\n'.encode('utf-8')
     )
     body.append('Content-Type: application/octet-stream\r\n\r\n'.encode('utf-8'))
 
     # 读取文件内容（二进制模式）
-    with open(file_path, 'rb') as f:
+    with open(file_name, 'rb') as f:
         body.append(f.read())
     body.append(f'\r\n--{boundary}--\r\n'.encode('utf-8'))
 
@@ -250,13 +222,142 @@ def upload_file(url, file_path, token_auth, field_name='file', extra_fields=None
 
     return response, content
 
+# def AppendItem(dict, tid, cateId, sha256, style_url, version_num, version_time):
+#     if (values := dict.get(tid)) is None:
+#         dict[tid] = {}
+#
+#     values = {
+#         "cateId": cateId,
+#         "num": tid,
+#         "sha256": sha256,
+#         "url": style_url,
+#         "versionNum": version_num,
+#         "versionTime": version_time,
+#     }
+#     dict[tid] = values
 
+def AppendDefault():
+    dict = {}
+    dict["categoryId"] = []
+    dict["thirdId"] = []
+    dict["eleDesc"] = []
+    dict["gameDownloadUrl"] = []
+    dict["versionNum"] = []
+    dict["versionTime"] = []
+
+    return dict
+def AppendNum(dict, key, cateId, sha256, style_url, version_num, version_time):
+    dict["categoryId"].append(cateId)
+    dict["thirdId"].append(key)
+    dict["eleDesc"].append(sha256)
+    dict["gameDownloadUrl"].append(style_url)
+    dict["versionNum"].append(version_num)
+    dict["versionTime"].append(version_time)
+
+def SaveDataToExcel(fileName, pageName, data):
+    df = pd.DataFrame(data)
+    with pd.ExcelWriter(fileName) as writer:
+        df.to_excel(writer, sheet_name=pageName, index=False)
+
+## type 为 1时 excel
+def upTest(type , file_name, token_auth, field_name='file', extra_fields=None):
+    url = ZipUrl
+    if type == 1:
+        url = ExcelUrl
+    # 创建Http对象
+    http = httplib2.Http()
+
+    # 定义唯一的boundary
+    boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+    # 构建请求体
+    body = []
+
+    # 添加普通字段
+    if extra_fields:
+        for key, value in extra_fields.items():
+            body.append(f'--{boundary}\r\n'.encode('utf-8'))
+            body.append(
+                f'Content-Disposition: form-data; name="{key}"\r\n\r\n'.encode('utf-8')
+            )
+            body.append(f'{value}\r\n'.encode('utf-8'))
+
+    # 添加文件字段
+    body.append(f'--{boundary}\r\n'.encode('utf-8'))
+    body.append(
+        f'Content-Disposition: form-data; name="{field_name}"; filename="{file_name}"\r\n'.encode('utf-8')
+    )
+    body.append('Content-Type: application/octet-stream\r\n\r\n'.encode('utf-8'))
+
+    # 读取文件内容（二进制模式）
+    with open(file_name, 'rb') as f:
+        body.append(f.read())
+    body.append(f'\r\n--{boundary}--\r\n'.encode('utf-8'))
+
+    # 合并所有部分
+    body = b''.join(body)
+
+    # 设置请求头
+    headers = {
+        'Content-Type': f'multipart/form-data; boundary={boundary}',
+        'Content-Length': str(len(body)),
+        'Authorization': f'bearer {token_auth}'
+    }
+
+    # 发送POST请求
+    response, content = http.request(
+        uri=url,
+        method='POST',
+        headers=headers,
+        body=body
+    )
+
+    data = json.loads(content)
+    if type == 1:
+        return data["message"]
+    else:
+        return data["data"]
+
+def BatchUpdateZip(token, filePath):
+    cateId = "304"
+    versionNum = "v1.0.3"
+    timeStamp = int(time.time())
+    dict = AppendDefault()
+    zipFiles = utility.GetFiles(filePath)
+    for key, fullName in enumerate(zipFiles):
+        sha256 = utility.calculate_file_sha256(fullName)
+        fileName = os.path.basename(fullName)
+        num = os.path.splitext(fileName)[0]
+        url = upTest(0, fullName, token)
+        print(f"key:{num}, value:{fullName}, url:{url}")
+        AppendNum(dict, num, cateId, sha256,  url, versionNum, str(timeStamp))
+
+    return dict
 
 if __name__ == '__main__':
-    filePath = "D:\\tmp\\se.bin"
+    src = "D:\\tmp123"
+    dst = "d:\\tmp\\dst123"
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # 创建路径
     token = GetAuthToken()
     print(f"token:{token}")
-    print("finish ...")
+    if (len(token) == 0):
+        print("get token failed")
+        sys.exit(0)
+
+    dirs = utility.GetDirs(src)
+    for key, value in enumerate(dirs):
+        fileName = value["name"]
+        fullName = value["fullname"]
+        dict = BatchUpdateZip(token, fullName)
+
+        dstName = f"{dst}\\{fileName}.xlsx"
+        SaveDataToExcel(dstName, fileName, dict)
+        print(f"save excel {dstName}")
+        suc = upTest(1, dstName, token)
+        print(f"update excel suc:{suc}")
+
+    print(f"finish ...")
 
 
 
