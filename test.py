@@ -18,6 +18,7 @@ def t1(str):
 
     print("ook")
     return km
+
 if __name__ == '__main__':
     dictGood = {
 

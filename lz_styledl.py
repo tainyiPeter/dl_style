@@ -57,44 +57,55 @@ def get_test():
 
 # 授权接口
 def dl_auth(grant_type, cid, secret):
-    reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-auth/oauth/token"
+    # 请求的URL
+    url = 'https://cloud-pay.mbgtest.lenovomm.com/cloud-auth/oauth/token'
 
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-
-    body = {
+    # 请求体数据
+    data = {
         "grant_type": grant_type,
         "client_id": cid,
-        "client_secret": secret,
+        "client_secret": secret
     }
 
-    print(f"grant_type: {grant_type}")
-    print(f"client_id: {cid}")
-    print(f"client_secret: {secret}")
+    # 将字典编码为 application/x-www-form-urlencoded 格式
+    body = urlencode(data)
 
+    # 设置请求头
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': str(len(body))
+    }
+
+    # 创建 httplib2.Http 对象
     http = httplib2.Http()
-    strJsonBody = json.dumps(body)
-    response, content = http.request(reqUrl, 'POST', body=strJsonBody, headers=headers)
+
+    # 发送 POST 请求
+    response, content = http.request(
+        url,
+        method='POST',
+        body=body,
+        headers=headers
+    )
 
     # 打印响应状态码和内容
-    print('Status:', response.status)
-    print('Content:', content.decode('utf-8'))
+    # print("Status Code:", response.status)
+    # print("Response Content:", content.decode('utf-8'))
 
-    # req = http.request.Request(reqUrl,"POST", strJsonBody, head)
-    # res = request.urlopen(req)
-    # powerData = res.read()
-    # jsonData = json.loads(powerData)
-    # jsonDataF = json.dumps(jsonData, ensure_ascii=False, indent=1)
-
-    # print(jsonDataF)
+    return response, content
 
 def GetAuthToken():
-    dl_auth(grant_type, appId, client_secret)
+    response, content = dl_auth(grant_type, appId, client_secret)
+    if(response.status != 200):
+        print("get token failed")
+        return
 
-    token = ""
+    data = json.loads(content)
+    return data["access_token"]
 
-    return token
+    print("Status Code:", response.status)
+    print("Response Content:", content.decode('utf-8'))
+
+
 
 
 def GetList():
@@ -243,7 +254,8 @@ def upload_file(url, file_path, token_auth, field_name='file', extra_fields=None
 
 if __name__ == '__main__':
     filePath = "D:\\tmp\\se.bin"
-    GetAuthToken()
+    token = GetAuthToken()
+    print(f"token:{token}")
     print("finish ...")
 
 
