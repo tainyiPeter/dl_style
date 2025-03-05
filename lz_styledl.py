@@ -139,7 +139,7 @@ def GetList():
 
 
 
-def GetData(classifyId, pageIdx, pageSize):
+def GetData(classifyId, pageIdx=1, pageSize=10):
     reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-legionzone/api/v1/getClassifyDatas"
     uuid_str = str(uuid.uuid4())
     timeStamp = int(time.time()) * 1000
@@ -318,8 +318,29 @@ def upTest(type , file_name, token_auth, field_name='file', extra_fields=None):
     else:
         return data["data"]
 
+# (300=语音;301=自动；302=高燃；303=鬼畜；304=二次元；305=超现实；306=梦幻;307=复古，308=极客)
+def GetCategoryId(stype_name):
+    if stype_name == "gaoran":
+        return 302
+    elif stype_name == "guichu":
+        return 303
+    elif stype_name == "erciyuan":
+        return 304
+    elif stype_name == "chaoxianshi":
+        return 305
+    elif stype_name == "menghuan":
+        return 306
+    elif stype_name == "fugu":
+        return 307
+    elif stype_name == "jike":
+        return 308
+    else:
+        return 0
 def BatchUpdateZip(token, filePath):
-    cateId = "304"
+    stype_name = os.path.splitext(filePath)[0]
+    cateId = GetCategoryId(stype_name)
+    if(cateId == 0):
+        return {}
     versionNum = "v1.0.3"
     timeStamp = int(time.time())
     dict = AppendDefault()
@@ -330,11 +351,11 @@ def BatchUpdateZip(token, filePath):
         num = os.path.splitext(fileName)[0]
         url = upTest(0, fullName, token)
         print(f"key:{num}, value:{fullName}, url:{url}")
-        AppendNum(dict, num, cateId, sha256,  url, versionNum, str(timeStamp))
+        AppendNum(dict, num, str(cateId), sha256,  url, versionNum, str(timeStamp))
 
     return dict
 
-if __name__ == '__main__':
+def updataStyles():
     src = "D:\\tmp123"
     dst = "d:\\tmp\\dst123"
     if not os.path.exists(dst):
@@ -356,6 +377,10 @@ if __name__ == '__main__':
         print(f"save excel {dstName}")
         suc = upTest(1, dstName, token)
         print(f"update excel suc:{suc}")
+
+if __name__ == '__main__':
+    # GetList()
+    GetData(304)
 
     print(f"finish ...")
 
