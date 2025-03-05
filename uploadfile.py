@@ -1,7 +1,7 @@
 import httplib2
 
 
-def upload_file(url, file_path, field_name='file', extra_fields=None):
+def upload_file(url, file_path, token_auth, field_name='file', extra_fields=None):
     # 创建Http对象
     http = httplib2.Http()
 
@@ -39,7 +39,7 @@ def upload_file(url, file_path, field_name='file', extra_fields=None):
     headers = {
         'Content-Type': f'multipart/form-data; boundary={boundary}',
         'Content-Length': str(len(body)),
-        'Authorization': 'bearer 7b45ab30-ce13-4e26-8d09-898174486fc1'
+        'Authorization': f'bearer {token_auth}'
     }
 
     # 发送POST请求
@@ -53,13 +53,22 @@ def upload_file(url, file_path, field_name='file', extra_fields=None):
     return response, content
 
 
+
 # 使用示例
 if __name__ == '__main__':
-    # 上传文件并添加额外字段
+    # 单个素材文件上传
+    # response, content = upload_file(
+    #     url= "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile",
+    #     token_auth="7b45ab30-ce13-4e26-8d09-898174486fc1",
+    #     file_path='example.zip',
+    #     extra_fields={'key': 'value'}
+    # )
+
+    # excel 文件上传
     response, content = upload_file(
-        # url='http://httpbin.org/post',
-        url= "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile",
-        file_path='example.txt',
+        url= "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/biz/file/se/uploadFile",
+        token_auth="a658d4fe-71ae-4f70-84ee-7089386e1de8",
+        file_path='d:\\tmp\\ss.xlsx',
         extra_fields={'key': 'value'}
     )
 
