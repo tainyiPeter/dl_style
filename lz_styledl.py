@@ -259,6 +259,12 @@ def SaveDataToExcel(fileName, pageName, data):
     with pd.ExcelWriter(fileName) as writer:
         df.to_excel(writer, sheet_name=pageName, index=False)
 
+def SaveMulsheetToExcel(fileName, mulData):
+    with pd.ExcelWriter(fileName) as writer:
+        for key, data in mulData.items():
+            df = pd.DataFrame(data)
+            df.to_excel(writer, sheet_name=key, index=False)
+
 ## type 为 1时 excel
 def upTest(type , file_name, token_auth, field_name='file', extra_fields=None):
     url = ZipUrl
@@ -337,9 +343,10 @@ def GetCategoryId(stype_name):
     else:
         return 0
 def BatchUpdateZip(token, filePath):
-    stype_name = os.path.splitext(filePath)[0]
+    stype_name = os.path.basename(filePath)
     cateId = GetCategoryId(stype_name)
     if(cateId == 0):
+        print(f"get categoryid failed, stype_name:{stype_name}, filePath:{filePath}")
         return {}
     versionNum = "v1.0.3"
     timeStamp = int(time.time())
@@ -356,31 +363,43 @@ def BatchUpdateZip(token, filePath):
     return dict
 
 def updataStyles():
-    src = "D:\\tmp123"
+    src = "D:\\tmp\\src123"
     dst = "d:\\tmp\\dst123"
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
+    dstFile = f"{dst}\\{str(uuid.uuid4())}.xlsx"
     token = GetAuthToken()
     print(f"token:{token}")
     if (len(token) == 0):
         print("get token failed")
         sys.exit(0)
 
+    mulData = {}
     dirs = utility.GetDirs(src)
     for key, value in enumerate(dirs):
         fileName = value["name"]
         fullName = value["fullname"]
         dict = BatchUpdateZip(token, fullName)
+        mulData[fileName] = dict
 
-        dstName = f"{dst}\\{fileName}.xlsx"
-        SaveDataToExcel(dstName, fileName, dict)
-        print(f"save excel {dstName}")
-        suc = upTest(1, dstName, token)
-        print(f"update excel suc:{suc}")
+        # dstName = f"{dst}\\{fileName}.xlsx"
+        # SaveDataToExcel(dstName, fileName, dict)
+        # print(f"append data {fileName}")
+        # suc = upTest(1, dstName, token)
+        # print(f"update excel suc:{suc}")
+
+    SaveMulsheetToExcel(dstFile, mulData)
+    print(f"save excel to {dstFile}")
+    suc = upTest(1, dstFile, token)
+    print(f"update excel suc:{suc}")
+
 
 if __name__ == '__main__':
+    # updataStyles()
     # GetList()
     GetData(304)
+
+    #updataStyles()
 
     print(f"finish ...")
 
