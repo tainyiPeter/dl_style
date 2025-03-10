@@ -303,9 +303,8 @@ def checkDst(dst):
 
 if __name__ == '__main__':
     # parentPath = "D:\\work\\dexuan\\2501\\1209-test"
-    parentPath = "D:\\work\\stella\\01-15\\test"
-
-
+    # parentPath = "D:\\work\\stella\\01-15\\test"
+    parentPath = "D:\\work\\liuzf\\test"
     dst = parentPath + "\\dst"
     #
     # 处理视频
@@ -325,7 +324,6 @@ if __name__ == '__main__':
 
 
     print("finish style adjust")
-
 
 
 

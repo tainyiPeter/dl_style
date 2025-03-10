@@ -94,7 +94,8 @@ if __name__ == "__main__":
     #     "sha1":[]
     # }
 
-    stylePath = "D:\\work\\stella\\01-15\\test\\dst"
+    # stylePath = "D:\\work\\stella\\01-15\\test\\dst"
+    stylePath = "D:\\work\\liuzf\\test\\dst"
 
     dirs = GetDirs(stylePath)
 
@@ -121,10 +122,10 @@ if __name__ == "__main__":
             fileList.append(fileName)
             shaList.append(sha1_value)
         a = {
-            "fileName":fileList,
-            "sha1":shaList
+            "fileName": fileList,
+            "sha1": shaList
         }
         dict[style_name] = a
 
-    SaveDataToExcel('d:\\tmp\\cloud_sha256_2025_01_22.xlsx', dict)
+    SaveDataToExcel('d:\\tmp\\cloud_sha256_2025_03_10.xlsx', dict)
     print("finish")

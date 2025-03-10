@@ -64,10 +64,11 @@ def unzip_file(zip_file, dstPath):
         zip_ref.extractall(dstPath)
 
 if __name__ == '__main__':
-
-    #
     # dst = "D:\\work\\dexuan\\2501\\dst"
-    dst = "D:\\work\\stella\\01-15\\test\\dst"
+    # dst = "D:\\work\\stella\\01-15\\test\\dst"
+
+    parentPath = "D:\\work\\liuzf\\test"
+    dst = parentPath + "\\dst"
 
     # 压缩
     styles = GetDirs(dst)
