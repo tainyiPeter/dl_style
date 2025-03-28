@@ -2,6 +2,7 @@ from utility import *
 from hl_public import *
 
 import pandas as pd
+from datetime import datetime
 
 def test(fileName):
     # 定义两个字典
@@ -45,7 +46,11 @@ def SaveMulsheetToExcel(fileName, mulData):
             df.to_excel(writer, sheet_name=key, index=False)
 
 if __name__ == '__main__':
-    dst = "d:\\tmp\\16.xlsx"
+    #dst = "d:\\tmp\\16.xlsx"
+
+    dst = "d:\\tmp"
+    current_time = datetime.now().strftime("lz_uf_%Y-%m-%d_%H-%M-%S")
+    dstFile = f"{dst}\\{current_time}.xlsx"
 
     # 定义两个字典
     data1 = {
@@ -67,7 +72,7 @@ if __name__ == '__main__':
     # for key, value in mulData.items():
     #     print(f"Key: {key}, Value: {value}")
 
-    SaveMulsheetToExcel(dst, mulData)
+    SaveMulsheetToExcel(dstFile, mulData)
 
     # TestMulSheet(dst, "page1", data1)
     # TestMulSheet(dst, "page2", data2)

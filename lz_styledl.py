@@ -8,6 +8,7 @@ import os
 import HttpUtils
 import utility
 import pandas as pd
+from datetime import datetime
 
 from urllib.parse import urlencode
 
@@ -16,6 +17,7 @@ from urllib.parse import urlencode
 # 文档地址：
 # https://km.xpaas.lenovo.com/pages/viewpage.action?pageId=464204410
 
+style_version = "v1.0.3"
 
 # 单个素材文件上传地址, 测试地址
 ZipUrl = "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile"
@@ -260,6 +262,7 @@ def SaveDataToExcel(fileName, pageName, data):
         df.to_excel(writer, sheet_name=pageName, index=False)
 
 def SaveMulsheetToExcel(fileName, mulData):
+    print(f"fileName:{fileName}")
     with pd.ExcelWriter(fileName) as writer:
         for key, data in mulData.items():
             df = pd.DataFrame(data)
@@ -348,7 +351,7 @@ def BatchUpdateZip(token, filePath):
     if(cateId == 0):
         print(f"get categoryid failed, stype_name:{stype_name}, filePath:{filePath}")
         return {}
-    versionNum = "v1.0.3"
+    versionNum = style_version
     timeStamp = int(time.time())
     dict = AppendDefault()
     zipFiles = utility.GetFiles(filePath)
@@ -363,11 +366,16 @@ def BatchUpdateZip(token, filePath):
     return dict
 
 def updataStyles():
-    src = "D:\\tmp\\src123"
-    dst = "d:\\tmp\\dst123"
+    # src = "D:\\tmp\\src123"
+    src = "D:\\work\\liuzf\\test\\dst"
+    # src = "D:\\work\\liuzf\\test\\dst_test"
+    dst = "D:\\work\\liuzf\\test\\dst_test"
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
-    dstFile = f"{dst}\\{str(uuid.uuid4())}.xlsx"
+    current_time = datetime.now().strftime("lz_uf_%Y-%m-%d_%H-%M-%S")
+    dstFile = f"{dst}\\{current_time}.xlsx"
+    print(f"dstFile:{dstFile}")
+
     token = GetAuthToken()
     print(f"token:{token}")
     if (len(token) == 0):
@@ -393,18 +401,25 @@ def updataStyles():
     suc = upTest(1, dstFile, token)
     print(f"update excel suc:{suc}")
 
+def SingFileUpdate(fullName):
+    token = GetAuthToken()
+
+    url = upTest(0, fullName, token)
+    print(f"update url:{url}")
+
+
 
 if __name__ == '__main__':
     # updataStyles()
     # GetList()
-    GetData(304)
+    # GetData(304)
 
     #updataStyles()
 
+    # key:47, value:D:\work\liuzf\test\dst\guichu\47.zip, url:None
+    SingFileUpdate("D:\\work\\liuzf\\test\\dst\\guichu\\47.zip")
+
     print(f"finish ...")
-
-
-
 
 
 
