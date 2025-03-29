@@ -243,7 +243,7 @@ def AppendDefault():
     dict["categoryId"] = []
     dict["thirdId"] = []
     dict["eleDesc"] = []
-    dict["gameDownloadUrl"] = []
+    dict["gameDownLoadUrl"] = []
     dict["versionNum"] = []
     dict["versionTime"] = []
 
@@ -252,7 +252,7 @@ def AppendNum(dict, key, cateId, sha256, style_url, version_num, version_time):
     dict["categoryId"].append(cateId)
     dict["thirdId"].append(key)
     dict["eleDesc"].append(sha256)
-    dict["gameDownloadUrl"].append(style_url)
+    dict["gameDownLoadUrl"].append(style_url)
     dict["versionNum"].append(version_num)
     dict["versionTime"].append(version_time)
 
@@ -412,12 +412,12 @@ def SingFileUpdate(fullName):
 if __name__ == '__main__':
     # updataStyles()
     # GetList()
-    # GetData(304)
+    GetData(305,1 , 50)
 
     #updataStyles()
 
     # key:47, value:D:\work\liuzf\test\dst\guichu\47.zip, url:None
-    SingFileUpdate("D:\\work\\liuzf\\test\\dst\\guichu\\47.zip")
+    # SingFileUpdate("D:\\work\\liuzf\\test\\dst\\guichu\\47.zip")
 
     print(f"finish ...")
 
