@@ -22,6 +22,7 @@ def GetGameEvent(strEvent):
         "knock down": 3,
         "defeat": 4,
         "victory": 5,
+        "ALL": 100,
     }
 
     return dict.get(strEvent)
