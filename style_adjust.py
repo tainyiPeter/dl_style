@@ -25,6 +25,8 @@ def GetFiles(path_k):
     return files
 
 def GetDirs(path_k):
+    if not os.path.exists(path_k):
+        return []
     paths = os.walk(path_k)
     dirs = []
     for path, dir_lst, file_lst in paths:
@@ -61,8 +63,21 @@ def mymovefile(srcfile, dstpath):  # 移动函数
         print("movfile: ", srcfile,  "====>", dstpath + fname)
 
 
+# 移动到bgm目录
 def move_file_to_dst_by_keyword(src_path, word, dst_path):
     dst_bgm = dst_path + "\\" + "BGM\\"
+    if not os.path.exists(dst_bgm):
+        os.makedirs(dst_bgm)  # 创建路径
+
+    for filename in os.listdir(src_path):
+        fp = os.path.join(src_path, filename)
+        if os.path.isfile(fp) and word in filename:
+            bgm_file = dst_bgm + word + ".webm"
+            shutil.move(fp, bgm_file)
+
+# 移动到转场目录
+def move_file_to_tran_by_keyword(src_path, word, dst_path):
+    dst_bgm = dst_path + "\\" + "trans\\"
     if not os.path.exists(dst_bgm):
         os.makedirs(dst_bgm)  # 创建路径
 
@@ -98,6 +113,7 @@ def proc_video_in_file(srcFile, dstFile):
 
     move_file_to_dst_by_keyword(srcFile, "begin", dstFile)
     move_file_to_dst_by_keyword(srcFile, "end", dstFile)
+    move_file_to_tran_by_keyword(srcFile, "transition", dstFile)
 
     dst_i_effect = dstFile + "\\effects\\"
     effFiles = GetFiles(srcFile)
@@ -177,6 +193,47 @@ def proc_video_second(src, dst):
 
             srcFullFile = srcDir + "\\" + subName
             dstFullFile = dstDir + "\\" + str(int(digit) + index)
+
+            print("full src:", srcFullFile)
+            print("full dst:", dstFullFile)
+
+            proc_video_in_file(srcFullFile, dstFullFile)
+    pass
+
+
+def proc_video_third(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # 创建路径
+
+    style_list = [
+        "chaoxianshi",
+        "erciyuan",
+        "gaoran",
+        "guichu",
+        "menghuan",
+        "fugu",
+        "jike",
+    ]
+
+    for i, styleName in enumerate(style_list):
+        srcDir = src + "\\" + styleName
+        dstDir = dst + "\\" + styleName
+
+        # index = 25
+        # if (styleName == "fugu" or styleName == "jike") :
+        #     index = 0
+
+        srcList = GetDirs(srcDir)
+        for fileIdx, dirName in enumerate(srcList):
+            subName = dirName["name"]
+            digit = FetchDigit(subName)
+            if(int(digit) == 0):
+                print("------------------------------------------------------------------------------------")
+                print("invalid file:", subName)
+                continue
+
+            srcFullFile = srcDir + "\\" + subName
+            dstFullFile = dstDir + "\\" + str(int(digit))
 
             print("full src:", srcFullFile)
             print("full dst:", dstFullFile)
@@ -269,6 +326,43 @@ def proc_audio_second(src, dst):
             proc_audio_in_file(srcFiles, dstDir, dstName, index)
     pass
 
+def proc_audio_third(src, dst):
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # 创建路径
+
+    style_list = [
+        "chaoxianshi",
+        "erciyuan",
+        "gaoran",
+        "guichu",
+        "menghuan",
+        "fugu",
+        "jike",
+    ]
+
+    for i, styleName in enumerate(style_list):
+        srcDir = src + "\\" + styleName
+        dstDir = dst + "\\" + styleName
+
+        index = 25
+        if (styleName == "fugu" or styleName == "jike") :
+            index = 0
+
+        srcList = GetDirs(srcDir)
+        for fileIdx, dirName in enumerate(srcList):
+            subName = dirName["name"]
+            dstName = ""
+            if(subName == "30s"):
+                dstName = "s30.aac"
+            elif(subName == "60s"):
+                dstName = "m1.aac"
+            else:
+                dstName = "m2.aac"
+
+            srcFiles = srcDir + "\\" + subName
+            proc_audio_in_file(srcFiles, dstDir, dstName, index)
+    pass
+
 def showAllFiles(strPath, type):
     #print("showAllFiles:", strPath)
     files = GetFiles(strPath)
@@ -312,22 +406,19 @@ if __name__ == '__main__':
     # src_video_second = parentPath + "\\video\\second"
     # proc_video_first(src_video_first, dst)
     # proc_video_second(src_video_second, dst)
+    src_video_third = parentPath + "\\video\\third"
+    proc_video_third(src_video_third, dst)
     # #
     # # # 处理音频
     # src_audio_first = parentPath + "\\audio\\first"
     # src_audio_second = parentPath + "\\audio\\second"
+    # src_audio_third = parentPath + "\\audio\\third"
     # proc_audio_first(src_audio_first, dst)
     # proc_audio_second(src_audio_second, dst)
+    # proc_audio_third(src_audio_third, dst)
 
 
     checkDst(dst)
 
 
     print("finish style adjust")
-
-
-
-
-
-
-

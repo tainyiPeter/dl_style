@@ -10,6 +10,8 @@ def is_nan(str):
     except ValueError:
         return False
 def GetDirs(path_k):
+    if not os.path.exists(path_k):
+        return []
     paths = os.walk(path_k)
     dirs = []
     for path, dir_lst, file_lst in paths:
