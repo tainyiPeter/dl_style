@@ -17,7 +17,8 @@ from urllib.parse import urlencode
 # 文档地址：
 # https://km.xpaas.lenovo.com/pages/viewpage.action?pageId=464204410
 
-style_version = "v1.0.3"
+style_version = "v2.0.3"
+downloadUrlFlag = "gameDownloadUrl"
 
 # 单个素材文件上传地址, 测试地址
 ZipUrl = "https://cloud-biz.mbgtest.lenovomm.com/cloud-legionzone/file/uploadFile"
@@ -243,7 +244,7 @@ def AppendDefault():
     dict["categoryId"] = []
     dict["thirdId"] = []
     dict["eleDesc"] = []
-    dict["gameDownLoadUrl"] = []
+    dict[downloadUrlFlag] = []
     dict["versionNum"] = []
     dict["versionTime"] = []
 
@@ -252,7 +253,7 @@ def AppendNum(dict, key, cateId, sha256, style_url, version_num, version_time):
     dict["categoryId"].append(cateId)
     dict["thirdId"].append(key)
     dict["eleDesc"].append(sha256)
-    dict["gameDownLoadUrl"].append(style_url)
+    dict[downloadUrlFlag].append(style_url)
     dict["versionNum"].append(version_num)
     dict["versionTime"].append(version_time)
 
@@ -325,7 +326,15 @@ def upTest(type , file_name, token_auth, field_name='file', extra_fields=None):
     if type == 1:
         return data["message"]
     else:
-        return data["data"]
+        try:
+            value = data["data"]
+            return value
+        except KeyError:
+            value = {}
+            print(f"jso laods failed, {data}")
+            print(f"type:{type}, fileName:{file_name}")
+            return value
+        #return data["data"]
 
 # (300=语音;301=自动；302=高燃；303=鬼畜；304=二次元；305=超现实；306=梦幻;307=复古，308=极客)
 def GetCategoryId(stype_name):
@@ -343,6 +352,8 @@ def GetCategoryId(stype_name):
         return 307
     elif stype_name == "jike":
         return 308
+    elif stype_name == "npu":
+        return 299
     else:
         return 0
 def BatchUpdateZip(token, filePath):
@@ -367,9 +378,12 @@ def BatchUpdateZip(token, filePath):
 
 def updataStyles():
     # src = "D:\\tmp\\src123"
-    src = "D:\\work\\liuzf\\test\\dst"
+    # src = "D:\\work\\liuzf\\test\\dst"
     # src = "D:\\work\\liuzf\\test\\dst_test"
-    dst = "D:\\work\\liuzf\\test\\dst_test"
+    # dst = "D:\\work\\liuzf\\test\\dst_test"
+
+    src = "D:\\work\\huangxipeng\\3-21\\dst"
+    dst = src
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
     current_time = datetime.now().strftime("lz_uf_%Y-%m-%d_%H-%M-%S")
@@ -407,17 +421,28 @@ def SingFileUpdate(fullName):
     url = upTest(0, fullName, token)
     print(f"update url:{url}")
 
+def UpdateXlsxFile(fullName):
+    token = GetAuthToken()
 
+    url = upTest(1, fullName, token)
+    print(f"update url:{url}")
 
 if __name__ == '__main__':
-    # updataStyles()
+    updataStyles()
     # GetList()
-    GetData(305,1 , 50)
+    # GetData(299,1 , 50)
 
-    #updataStyles()
+    # updataStyles()
 
     # key:47, value:D:\work\liuzf\test\dst\guichu\47.zip, url:None
-    # SingFileUpdate("D:\\work\\liuzf\\test\\dst\\guichu\\47.zip")
+    # singFile = "D:\\work\\yunhao\\Intel_NPU\\Intel_NPU.zip"
+    # singFile = "D:\\work\\yunhao\\Intel_NPU\\47.zip"
+    # SingFileUpdate(singFile)
+
+    # token = GetAuthToken()
+    # dstFile = ("D:\\work\\liuzf\\test\\dst_test\\lz_uf_2025-03-28_14-32-39.xlsx")
+    # suc = upTest(1, dstFile, token)
+    # print(f"update excel suc:{suc}, fileName:{dstFile}")
 
     print(f"finish ...")
 
