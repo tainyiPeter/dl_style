@@ -383,6 +383,7 @@ def updataStyles():
     # dst = "D:\\work\\liuzf\\test\\dst_test"
 
     src = "D:\\work\\huangxipeng\\3-21\\dst"
+    src = "D:\\tmp123"
     dst = src
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
@@ -412,8 +413,8 @@ def updataStyles():
 
     SaveMulsheetToExcel(dstFile, mulData)
     print(f"save excel to {dstFile}")
-    suc = upTest(1, dstFile, token)
-    print(f"update excel suc:{suc}")
+    # suc = upTest(1, dstFile, token)
+    # print(f"update excel suc:{suc}")
 
 def SingFileUpdate(fullName):
     token = GetAuthToken()
@@ -428,16 +429,19 @@ def UpdateXlsxFile(fullName):
     print(f"update url:{url}")
 
 if __name__ == '__main__':
-    updataStyles()
-    # GetList()
-    # GetData(299,1 , 50)
+    # updataStyles()
+    GetList()
+    # GetData(302,1 , 50)
 
     # updataStyles()
 
     # key:47, value:D:\work\liuzf\test\dst\guichu\47.zip, url:None
-    # singFile = "D:\\work\\yunhao\\Intel_NPU\\Intel_NPU.zip"
+    # singFile = "D:\\work\\huangxipeng\\3-21\\dst\\npu\\1.zip"
     # singFile = "D:\\work\\yunhao\\Intel_NPU\\47.zip"
     # SingFileUpdate(singFile)
+
+    # xlsxFile = "D:\\work\\huangxipeng\\3-21\\dst\\lz_uf_2025-04-02_10-17-30.xlsx"
+    # UpdateXlsxFile(xlsxFile)
 
     # token = GetAuthToken()
     # dstFile = ("D:\\work\\liuzf\\test\\dst_test\\lz_uf_2025-03-28_14-32-39.xlsx")

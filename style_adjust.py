@@ -2,7 +2,7 @@ import sys
 import os
 import shutil
 import re
-
+from pathlib import Path
 
 def FetchDigit(txt):
     digit_list = re.findall(r'\d+', txt)
@@ -326,6 +326,34 @@ def proc_audio_second(src, dst):
             proc_audio_in_file(srcFiles, dstDir, dstName, index)
     pass
 
+
+def get_audio_src_path(audio_path, c, style, idx):
+    cnt = c.get(style, 0)
+    if cnt == 0:
+        print(f"sss:{audio_path}, {style}, {idx}")
+    idx = (idx % cnt) + 1
+    fullpath = audio_path + "\\" + str(idx)
+
+    return fullpath
+
+
+# D_JiKe_2_1min.aac -> m1.aac
+# D_JiKe_2_2min.aac -> m2.aac
+# D_JiKe_2_30s.aac -> s30.aac
+def convertName(fileName):
+    acclist = fileName.split("_")
+    if(len(acclist) != 4):
+        return ""
+    if(acclist[3] == "1min.aac"):
+        return "m1.aac"
+    elif(acclist[3] == "2min.aac"):
+        return "m2.aac"
+    elif(acclist[3] == "30s.aac"):
+        return "s30.aac"
+    else:
+        return ""
+    pass
+
 def proc_audio_third(src, dst):
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
@@ -340,27 +368,95 @@ def proc_audio_third(src, dst):
         "jike",
     ]
 
+    print(f"src path:{src}")
+    print(f"dst path:{dst}")
+
+    c = {}
+    srcAudioList = GetDirs(src)
+    for fileIdx, pathName in enumerate(srcAudioList):
+        fileName = pathName["name"]
+        fullName = pathName["fullname"]
+        cnt = 0
+        if not os.path.exists(fullName):
+            cnt = 0
+        else:
+            cnt = sum(os.path.isdir(os.path.join(fullName, name)) for name in os.listdir(fullName))
+
+        c[fileName] = cnt
+    print(c)
     for i, styleName in enumerate(style_list):
         srcDir = src + "\\" + styleName
         dstDir = dst + "\\" + styleName
 
-        index = 25
-        if (styleName == "fugu" or styleName == "jike") :
-            index = 0
+        dstList = GetDirs(dstDir)
+        idx = 0
+        print(f"styleName:{styleName}")
+        for fileIdx, dirName in enumerate(dstList):
+            style = dirName["name"]
+            fullName = dirName["fullname"]
+            fullName += "\\BGM"
+            audio_path = get_audio_src_path(srcDir, c, styleName, idx)
+            print(f"audio_path:{audio_path}")
+            audioFiles = GetFiles(audio_path)
 
-        srcList = GetDirs(srcDir)
-        for fileIdx, dirName in enumerate(srcList):
-            subName = dirName["name"]
-            dstName = ""
-            if(subName == "30s"):
-                dstName = "s30.aac"
-            elif(subName == "60s"):
-                dstName = "m1.aac"
-            else:
-                dstName = "m2.aac"
+            for i, val in enumerate(audioFiles):
+                srcFileName = os.path.basename(val)
 
-            srcFiles = srcDir + "\\" + subName
-            proc_audio_in_file(srcFiles, dstDir, dstName, index)
+                newAccName = convertName(srcFileName)
+                if(len(newAccName) == 0):
+                    print(f"newAccName is empty, {srcFileName}")
+                srcName = val
+                dstName = fullName + "\\" + newAccName
+                shutil.move(srcName, srcName)
+                print(f"audio move: {srcName} -> {dstName}")
+
+            print(f"fullName:{fullName}, audio_path:{audio_path}, idx:{idx}")
+            idx += 1
+
+        # srcList = GetDirs(srcDir)
+        # for fileIdx, dirName in enumerate(srcList):
+        #     subName = dirName["name"]
+        #     fullName = dirName["fullname"]
+        #     print(f"subName:{subName}")
+        #     print(f"fullName:{fullName}")
+        #     dstName = ""
+        #     if(subName == "30s"):
+        #         dstName = "s30.aac"
+        #     elif(subName == "60s"):
+        #         dstName = "m1.aac"
+        #     else:
+        #         dstName = "m2.aac"
+        #
+        #     srcFiles = srcDir + "\\" + subName
+        #     #proc_audio_in_file(srcFiles, dstDir, dstName, index)
+
+
+    # effFiles = GetFiles(src)
+    # for idx, fullName in enumerate(effFiles):
+    #     fileName = os.path.basename(fullName)
+    #     # "A_GaoRan_2_1min.aac"
+
+
+        # mymovefile(val_eff, dst_i_effect)
+
+    # for i, styleName in enumerate(style_list):
+    #     srcDir = src + "\\" + styleName
+    #     dstDir = dst + "\\" + styleName
+    #
+    #     srcList = GetDirs(srcDir)
+    #     for fileIdx, dirName in enumerate(srcList):
+    #         subName = dirName["name"]
+    #         print(f"subName:{subName}")
+    #         dstName = ""
+    #         if(subName == "30s"):
+    #             dstName = "s30.aac"
+    #         elif(subName == "60s"):
+    #             dstName = "m1.aac"
+    #         else:
+    #             dstName = "m2.aac"
+    #
+    #         srcFiles = srcDir + "\\" + subName
+    #         # proc_audio_in_file(srcFiles, dstDir, dstName, index)
     pass
 
 def showAllFiles(strPath, type):
@@ -398,16 +494,22 @@ def checkDst(dst):
 if __name__ == '__main__':
     # parentPath = "D:\\work\\dexuan\\2501\\1209-test"
     # parentPath = "D:\\work\\stella\\01-15\\test"
-    parentPath = "D:\\work\\liuzf\\test"
+
+    # parentPath = "D:\\work\\liuzf\\test"
+    # dst = parentPath + "\\dst"
+
+    # D:\work\stella\2025-04-02\test
+    parentPath = "D:\\work\\stella\\2025-04-02\\test"
     dst = parentPath + "\\dst"
-    #
+
+
     # 处理视频
     # src_video_first = parentPath + "\\video\\first"
     # src_video_second = parentPath + "\\video\\second"
     # proc_video_first(src_video_first, dst)
     # proc_video_second(src_video_second, dst)
-    src_video_third = parentPath + "\\video\\third"
-    proc_video_third(src_video_third, dst)
+    # src_video_third = parentPath + "\\video\\third"
+    # proc_video_third(src_video_third, dst)
     # #
     # # # 处理音频
     # src_audio_first = parentPath + "\\audio\\first"
