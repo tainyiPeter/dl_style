@@ -2,6 +2,7 @@ from openpyxl import Workbook
 import pandas as pd
 import os
 import hashlib
+from datetime import datetime
 
 def SaveDataToExcel(fileName, data):
     # print(data)
@@ -95,17 +96,19 @@ if __name__ == "__main__":
     # }
 
     # stylePath = "D:\\work\\stella\\01-15\\test\\dst"
-    stylePath = "D:\\work\\liuzf\\test\\dst"
+    # stylePath = "D:\\work\\liuzf\\test\\dst"
+    parentPath = "D:\\work\\stella\\2025-04-02\\test"
+    parentPath += "\\dst"
 
-    dirs = GetDirs(stylePath)
+    current_time = datetime.now().strftime("lz_uf_%Y-%m-%d_%H-%M-%S")
+    dstFile = f"{parentPath}\\cloud_sha256_{current_time}.xlsx"
 
-
+    dirs = GetDirs(parentPath)
     langdict ={
         "name":"lang",
         "fullname":langPath
     }
     # dirs.append(langdict)
-
 
     dict = {}
     for pathKey, pathValue in enumerate(dirs):
@@ -123,9 +126,10 @@ if __name__ == "__main__":
             shaList.append(sha1_value)
         a = {
             "fileName": fileList,
-            "sha1": shaList
+            "sha256": shaList
         }
+        print(f"style name:{style_name}")
         dict[style_name] = a
 
-    SaveDataToExcel('d:\\tmp\\cloud_sha256_2025_03_19.xlsx', dict)
+    SaveDataToExcel(dstFile, dict)
     print("finish")

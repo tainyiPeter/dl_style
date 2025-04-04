@@ -68,6 +68,7 @@ if __name__ == '__main__':
     # dst = "D:\\work\\stella\\01-15\\test\\dst"
 
     parentPath = "D:\\work\\liuzf\\test"
+    parentPath = "D:\\work\\stella\\2025-04-02\\test"
     dst = parentPath + "\\dst"
 
     # 压缩
