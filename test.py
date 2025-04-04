@@ -35,6 +35,19 @@ def GetDirs(path_k):
             dirs.append(mydict)
         return dirs
 
+def GetTranIndex(strName):
+    tranName = "transition"
+    l = strName.split("_")
+    strIndex = l[1]
+    tranFlag = l[2]
+    if(tranFlag != tranName):
+        return 0
+    try:
+        tranIndex = int(strIndex)
+    except ValueError:
+        return 0
+    return tranIndex
+
 if __name__ == '__main__':
     # dictGood = {
     #
@@ -50,12 +63,18 @@ if __name__ == '__main__':
     # for fileIdx, dirName in enumerate(srcList):
     #     print(f"idx:{fileIdx}, name:{dirName}")
 
-    path = "D:\\work\\liuzf\\test\\video\\third\\chaoxianshi"
-    srcList = GetDirs(path)
-    for fileIdx, dirName in enumerate(srcList):
-        print(f"idx:{fileIdx}, name:{dirName}")
+    # path = "D:\\work\\liuzf\\test\\video\\third\\chaoxianshi"
+    # srcList = GetDirs(path)
+    # for fileIdx, dirName in enumerate(srcList):
+    #     print(f"idx:{fileIdx}, name:{dirName}")
 
+    scopeType = 1
+    TranIndex = GetTranIndex("menghuan_54_transition")
+    styleType = 5
+    TranIndex += 100 * styleType
+    TranIndex = TranIndex + 1000 * scopeType
 
+    print(TranIndex)
     pass
 
 

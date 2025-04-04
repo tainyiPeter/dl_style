@@ -45,7 +45,7 @@ def SaveDictFile(strFileName, c):
     with open(strFileName, "w", encoding='utf-8') as file:
         # print(strJson)
         file.write(strJson)
-    pass
+    print(f"save file:{strFileName}")
 
 def CheckAndCreatePath(dstPath):
     if not os.path.exists(dstPath):

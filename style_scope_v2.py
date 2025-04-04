@@ -5,6 +5,7 @@ import pandas as pd
 
 from utility import *
 from hl_public import *
+from datetime import datetime
 
 
 sheet1 = "第一批视频"
@@ -41,6 +42,10 @@ all_games = 100     # 适合所有游戏
 all_events = 100    # 所有事件
 
 tranName = "transition"
+
+gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17]  # 穿越火线不支持
+styleTypeList = [2, 3, 4, 5, 6, 7, 8]  # 素材风格
+eventTypeList = [0, 2, 3, 4, 5]  # 不包含 1 死亡
 
 def GetTranIndex(strName):
     l = strName.split("_")
@@ -140,13 +145,15 @@ def update_dict(dict, key, value):
 def CheckEffect(str):
     if str is None:
         return 0
-
     strEffect = str.strip()
-    if strEffect == "effect":
+    if strEffect == "effect" or strEffect == "effect01":
         return 1
-    elif strEffect == "word":
+    elif strEffect == "word" or strEffect == "effect02":
         return 2
+    elif strEffect == "begin" or strEffect == "end" or strEffect == "transition":
+        return 0
     else:
+        print(f"check effect failed: {strEffect}")
         return 0
 
 def ParseGameDetails(c, df, bSecond):
@@ -158,7 +165,11 @@ def ParseGameDetails(c, df, bSecond):
         strName  = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
         styleIndex = GetStyleIndex(strName, bSecond)
         strStyleType = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
-        styleIndex = 100 * GetStyleType(strStyleType) + styleIndex
+        styleType = GetStyleType(strStyleType)
+        if(styleType == None):
+            print(f"ParseGameDetails styleType is none, {strStyleType}")
+            continue
+        styleIndex = 100 * styleType + styleIndex
         for game_col in range(colGame_LOL, columns_cnt):
             strGame = df.iloc[row, game_col]
             gameType = CheckGameType(game_col, strGame)
@@ -260,15 +271,21 @@ def ParseScopeDetail(c, df, bSecond):
             if (gameType <= 0):
                 continue
             elif (gameType == all_games):
-                for gameIdx in range(1, 17):
-                    if gameIdx == 3:
-                        # 过滤掉穿越火线
-                        continue
+                for gameIdx in gameTypeList:
                     num = styleIndex + 10000 * gameIdx
-                    update_dict(c, eventType, num)
+                    if (eventType == all_events):
+                        for oneEventType in eventTypeList:
+                            update_dict(c, oneEventType, num)
+                    else:
+                        update_dict(c, eventType, num)
             if (gameType > 0):
                 num = styleIndex + 10000 * gameType
-                update_dict(c, eventType, num)
+                if (eventType == all_events):
+                    for oneEventType in eventTypeList:
+                        update_dict(c, oneEventType, num)
+                else:
+                    update_dict(c, eventType, num)
+                #update_dict(c, eventType, num)
 
 
 def parseScope(fileName, dstPath):
@@ -300,11 +317,16 @@ def ParseTranDetail(c, df):
 
         strStyleType = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
         styleType = GetStyleType(strStyleType)
-        print(f"       style:{styleType}, tranIdx:{TranIndex}")
+        scopeType = int(df.iloc[row, colScope])
+        # print(f"       style:{styleType}, tranIdx:{TranIndex}")
         TranIndex += 100 * styleType
-        print(f"finish style:{styleType}, tranIdx:{TranIndex}")
+        TranIndex += 1000 * scopeType
+        # print(f"finish style:{styleType}, tranIdx:{TranIndex}")
         # TranIndex 的值 为 ： 比如 二次元+第53套 (二次元 为4)
+
         # 则 TranIndex = 453
+        # 加上精选  如果是精选 则 TranIndex = 1453
+        #          如果不是精选 则 TranIndex = 453
 
         for game_col in range(colGame_LOL, columns_cnt):
             strGame = df.iloc[row, game_col]  # 读取第row行，第column列的数据
@@ -317,10 +339,10 @@ def ParseTranDetail(c, df):
                     if gameIdx == 3:
                         # 过滤掉穿越火线
                         continue
-                    print(f"all game, gameidx:{gameIdx}, TranIndex:{TranIndex}")
+                    # print(f"all game, gameidx:{gameIdx}, TranIndex:{TranIndex}")
                     update_dict(c, gameIdx, TranIndex)
             else:
-                print(f"one game, gameidx:{gameType}, TranIndex:{TranIndex}")
+                # print(f"one game, gameidx:{gameType}, TranIndex:{TranIndex}")
                 update_dict(c, gameType, TranIndex)
 
 def ParseTran(fileName, dstPath):
@@ -405,9 +427,11 @@ def MergeList(l1, l2):
 
 if __name__ == '__main__':
     # excelFile = "d:\\tmp\\素材拆分1230.xlsx"
-    excelFile = "d:\\tmp\\素材拆分20250331.xlsx"
-    dstPath = "d:\\tmp\\styleFile"
-    dstPath = "d:\\tmp\\styleFile0331"
+    excelFile = "d:\\tmp\\素材拆分20250404-调整游戏列表.xlsx"
+
+    # dstPath = "d:\\tmp\\styleFile"
+    # dstPath = "d:\\tmp\\styleFile0331"
+    dstPath = "d:\\tmp\\styleFile0404"
 
     CheckAndCreatePath(dstPath)
 
@@ -423,7 +447,7 @@ if __name__ == '__main__':
     cEvent = ParseEvent(excelFile, dstPath)
     cScope = parseScope(excelFile, dstPath)
     cTran = ParseTran(excelFile, dstPath)
-    #
+
     AppendGoodStyle(cGame, cEvent, cScope)
     #
     # save to disk
@@ -432,22 +456,24 @@ if __name__ == '__main__':
     SaveDictFile(dstPath + "\\effect_scope.json", cScope)
     SaveDictFile(dstPath + "\\trans.json", cTran)
     #
-    # gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10]  # 穿越火线不支持
+    # gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17]  # 穿越火线不支持
     # styleTypeList = [2, 3, 4, 5, 6, 7, 8]  # 素材风格
     # eventTypeList = [0, 2, 3, 4, 5]  # 不包含 1 死亡
     #
     # # print(cGame[9])
-    # a1 = {}
-    # a2 = {}
-    # for keyGame, valueGame in enumerate(gameTypeList):
-    #     for keyStyle, valueStyle in enumerate(styleTypeList):
-    #         for keyEvent, valueEvent in enumerate(eventTypeList):
-    #             strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
-    #             value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
-    #             value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
-    #             a1[strKey] = value_all
-    #             a2[strKey] = value_selected
-    #
-    # SaveDictFile("d:\\tmp\\all.json", a1)
-    # SaveDictFile("d:\\tmp\\selected.json", a2)
+    a1 = {}
+    a2 = {}
+    for keyGame, valueGame in enumerate(gameTypeList):
+        for keyStyle, valueStyle in enumerate(styleTypeList):
+            for keyEvent, valueEvent in enumerate(eventTypeList):
+                strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
+                value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
+                value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
+                a1[strKey] = value_all
+                a2[strKey] = value_selected
+
+    SaveDictFile("d:\\tmp\\all.json", a1)
+    SaveDictFile("d:\\tmp\\selected.json", a2)
+
+
     print("finish")
