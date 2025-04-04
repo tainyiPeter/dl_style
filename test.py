@@ -4,6 +4,7 @@ import hashlib
 from utility import *
 from hl_public import *
 
+
 def up(dict, key, value):
     if (values := dict.get(key)) is None:
         dict[key] = values = []
@@ -35,46 +36,24 @@ def GetDirs(path_k):
             dirs.append(mydict)
         return dirs
 
-def GetTranIndex(strName):
-    tranName = "transition"
-    l = strName.split("_")
-    strIndex = l[1]
-    tranFlag = l[2]
-    if(tranFlag != tranName):
-        return 0
-    try:
-        tranIndex = int(strIndex)
-    except ValueError:
-        return 0
-    return tranIndex
 
 if __name__ == '__main__':
-    # dictGood = {
+    audioSrcPath = "D:\\work\\dexuan\\2501\\play_test\\audio_short\\希腊语"
+    slogan = "Δεν έχει σημασία. Η αποτυχία είναι σαν ένα αεράκι το καλοκαίρι: φεύγει γρήγορα"
+    slogan = discard_end_char(slogan)
+    audioFileName = find_file_containing_ignore_case(audioSrcPath, slogan)
+    print(f"ret:{audioFileName}")
+
+    # s = "Блискавична перемога! Неймовірний рух!  "
     #
-    #     "6": [42,3],
-    #     "7": [6],
-    #     "8": [8]
-    # }
-    #
-    # for idx, value in dictGood.items():
-    #     for i in value:
-    #         print("idx:", idx, " value:", i)
-    # srcList = []
-    # for fileIdx, dirName in enumerate(srcList):
-    #     print(f"idx:{fileIdx}, name:{dirName}")
+    # s = discard_end_char(s)
+    # # if '.' in s:
+    # #     last_dot_index = s.rfind('.')
+    # #     s_len = len(s)
+    # #     if(s_len == last_dot_index+1):
+    # #         s = s[0:last_dot_index]
+    # print(s)  # 输出: example.file.nametxt
 
-    # path = "D:\\work\\liuzf\\test\\video\\third\\chaoxianshi"
-    # srcList = GetDirs(path)
-    # for fileIdx, dirName in enumerate(srcList):
-    #     print(f"idx:{fileIdx}, name:{dirName}")
-
-    scopeType = 1
-    TranIndex = GetTranIndex("menghuan_54_transition")
-    styleType = 5
-    TranIndex += 100 * styleType
-    TranIndex = TranIndex + 1000 * scopeType
-
-    print(TranIndex)
     pass
 
 

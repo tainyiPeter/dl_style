@@ -6,6 +6,7 @@ import pandas as pd
 import shutil
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
+from utility import *
 
 def resize(filename):
     wb = load_workbook(filename)
@@ -40,6 +41,14 @@ def GetFiles(path_k):
             files.append(f)
         return files
     return files
+
+def changeExtName():
+    path = "D:\\work\\dexuan\\2501\\play_test\\audio_rename"
+    srcFiles = GetDirs(path)
+    for i, val in enumerate(srcFiles):
+        fullName = val["fullname"]
+        cnt = change_specific_extensions(fullName, ".mp3", ".aac")
+        print(f"fullname:{fullName}, cnt:{cnt}")
 
 def PrintFile(fileName):
     with open(fileName, "r", encoding='utf-8') as file:
@@ -84,15 +93,22 @@ def procData(excelFile, langDstPath, audioSrcPath, column):
         killIdx = 1
         for i in range(killIdx, killIdx+pageSize):
             slogan = str(df.iloc[i, column])
-            #
-            audioFileName = slogan+".aac"
-            audioFiles = findFile(audioFileName, audioSrcPath)
-            if(len(audioFiles) == 0):
-                print("find kill audio file, failed:", audioFileName)
+            slogan = discard_end_char(slogan)
+            audioFileName = find_file_containing_ignore_case(audioSrcPath, slogan)
+            # audioFiles = findFile(audioFileName, audioSrcPath)
+            if(len(audioFileName) == 0):
+                print(f"find kill audio file failed, idx:{i}, path:{audioSrcPath}, slogan:{slogan}")
                 continue
             num_acc = f"{i:0>2}.aac"
-            print("move kill src:", audioSrcPath + "\\" + audioFileName, " dst:", killAudioPath + "\\" + num_acc)
-            shutil.move(audioSrcPath + "\\" + audioFileName, killAudioPath + "\\" + num_acc)
+            srcFile = audioSrcPath + "\\" + audioFileName
+            dstFile = killAudioPath + "\\" + num_acc
+            # print("move kill src:", srcFile, " dst:", dstFile)
+            try:
+                shutil.move(srcFile, dstFile)
+            except FileNotFoundError as e:
+                print(f"kill failed 文件未找到错误: {e}, srcFile:{srcFile}, dstFile:{dstFile}")
+                continue
+
             slogan += "\n"
             kf.write(slogan)
 
@@ -101,17 +117,22 @@ def procData(excelFile, langDstPath, audioSrcPath, column):
         for i in range(deadIdx, deadIdx + pageSize):
             #print("i:", i, "column:", column)
             slogan = str(df.iloc[i, column])
-            audioFileName = slogan + ".aac"
-            audioFiles = findFile(audioFileName, audioSrcPath)
-            if(len(audioFiles) == 0):
-                print("find dead audio file, failed:", audioFileName)
+            slogan = discard_end_char(slogan)
+            audioFileName = find_file_containing_ignore_case(audioSrcPath, slogan)
+            if(len(audioFileName) == 0):
+                print(f"find dead audio file failed,  idx:{i}, path:{audioSrcPath}, slogan:{slogan}" )
                 continue
             num_acc = f"{i-deadIdx+1:0>2}.aac"
-            print("move dead src:", audioSrcPath + "\\" + audioFileName, " dst:", killAudioPath + "\\" + num_acc)
-            shutil.move(audioSrcPath + "\\" + audioFileName, deadAudioPath + "\\" + num_acc)
+            srcFile = audioSrcPath + "\\" + audioFileName
+            dstFile = deadAudioPath + "\\" + num_acc
+            # print("move dead src:", srcFile, " dst:", dstFile)
+            try:
+                shutil.move(srcFile, dstFile)
+            except FileNotFoundError as e:
+                print(f"dead failed 文件未找到错误: {e}, srcFile:{srcFile}, dstFile:{dstFile}")
+                continue
             slogan += "\n"
             deadSloganFile.write(slogan)
-
     pass
 def GetCellData(fileName, row, column):
     #fileName = "D:\\work\\dexuan\\2501\\play_2501.xlsx"
@@ -191,8 +212,8 @@ def checkDst(dstPath, LangtoColumn):
 if __name__ == '__main__':
     playDst = "D:\\work\\dexuan\\2501\\play_test\\"
 
-    excelFile = playDst + "play_2501.xlsx"
-    audioPath = playDst + "audio"
+    excelFile = playDst + "拯救姬话术2501.xlsx"
+    audioPath = playDst + "audio_short"
     dstPath = playDst + "dstPath"
 
     #test
@@ -201,14 +222,8 @@ if __name__ == '__main__':
     #print("data:", data)
 
     LangtoColumn = {
-        "cn": [2, "中文"],
-        # "en": 3,
 
-        # "PortugueseBrazil": [26, "巴西葡萄牙语"],
-        # "PortugueseEurope": [12, "葡萄牙语"],
-
-
-
+        # old
         # "German": [4, "德语"],
         # "French": [5, "法语"],
         # "Polish": [6, "波兰语"],
@@ -235,6 +250,10 @@ if __name__ == '__main__':
         # "Greek": [27, "希腊语"],
         # "Russian": [28, "俄语"],
 
+
+
+        "cn": [2, "中文"],
+        "en": [3, "英语"],
         "de": [4, "德语"],
         "fr": [5, "法语"],
         "pl": [6, "波兰语"],
@@ -268,7 +287,7 @@ if __name__ == '__main__':
     #     print("lang:", lang, " col:", value[0], " audioFile:", audioLangPath, " langDstPath:", langDstPath)
     #     procData(excelFile, langDstPath, audioLangPath, value[0])
 
-    dstPath = "d:\\tmp\\12"
+    # dstPath = "d:\\tmp\\12"
     checkDst(dstPath, LangtoColumn)
-    # PrintFile("D:\\tmp\\slogan.dat")
+    # PrintFile("D:\\tmp\\slogan123.dat")
 

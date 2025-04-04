@@ -92,9 +92,7 @@ def proc_video(s, d):
 
     srcFiles = GetDirs(s)
     for i, val in enumerate(srcFiles):
-
         dst_i = d + "\\" + val["name"]
-
         move_file_to_dst_by_keyword(val["fullname"], "begin", dst_i)
         move_file_to_dst_by_keyword(val["fullname"], "end", dst_i)
 
