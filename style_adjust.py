@@ -394,10 +394,11 @@ def AppendAudioToDict(c, fullName):
 
 def proc_audio_third(src, dst):
     # prepare
-    batchRename(src_audio_third, "ChaoXieShi", "chaoxianshi")
-
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
+
+    print(f"proc audio third {src}, {dst}")
+    batchRename(src, "ChaoXieShi", "chaoxianshi")
 
     style_list = [
         "chaoxianshi",
@@ -461,70 +462,9 @@ def proc_audio_third(src, dst):
                     continue
                 srcFullName = src + "\\" + accName
                 dstFullName = dstFullPath + "\\" + newAccName
-                print(f"audio move: {srcFullName} -> {dstFullName}")
-                # shutil.move(srcFullName, dstFullName)
+                print(f"audio copy: {srcFullName} -> {dstFullName}")
+                shutil.copy(srcFullName, dstFullName)
             idx += 1
-            # audio_path = srcDir + "\\" + str(audio_idx)
-            # print(f"audio_path:{audio_path}")
-            # audioFiles = GetFiles(audio_path)
-            # for i, val in enumerate(audioFiles):
-            #     srcFileName = os.path.basename(val)
-            #     newAccName = convertName(srcFileName)
-            #     if(len(newAccName) == 0):
-            #         print(f"newAccName is empty, {srcFileName}")
-            #     srcName = val
-            #     dstName = fullName + "\\" + newAccName
-            #     # shutil.move(srcName, dstName)
-            #     print(f"audio move: {srcName} -> {dstName}")
-            #
-            # # print(f"fullName:{fullName}, audio_path:{audio_path}, idx:{idx}")
-            # idx += 1
-
-        # srcList = GetDirs(srcDir)
-        # for fileIdx, dirName in enumerate(srcList):
-        #     subName = dirName["name"]
-        #     fullName = dirName["fullname"]
-        #     print(f"subName:{subName}")
-        #     print(f"fullName:{fullName}")
-        #     dstName = ""
-        #     if(subName == "30s"):
-        #         dstName = "s30.aac"
-        #     elif(subName == "60s"):
-        #         dstName = "m1.aac"
-        #     else:
-        #         dstName = "m2.aac"
-        #
-        #     srcFiles = srcDir + "\\" + subName
-        #     #proc_audio_in_file(srcFiles, dstDir, dstName, index)
-
-
-    # effFiles = GetFiles(src)
-    # for idx, fullName in enumerate(effFiles):
-    #     fileName = os.path.basename(fullName)
-    #     # "A_GaoRan_2_1min.aac"
-
-
-        # mymovefile(val_eff, dst_i_effect)
-
-    # for i, styleName in enumerate(style_list):
-    #     srcDir = src + "\\" + styleName
-    #     dstDir = dst + "\\" + styleName
-    #
-    #     srcList = GetDirs(srcDir)
-    #     for fileIdx, dirName in enumerate(srcList):
-    #         subName = dirName["name"]
-    #         print(f"subName:{subName}")
-    #         dstName = ""
-    #         if(subName == "30s"):
-    #             dstName = "s30.aac"
-    #         elif(subName == "60s"):
-    #             dstName = "m1.aac"
-    #         else:
-    #             dstName = "m2.aac"
-    #
-    #         srcFiles = srcDir + "\\" + subName
-    #         # proc_audio_in_file(srcFiles, dstDir, dstName, index)
-    pass
 
 def showAllFiles(strPath, type):
     #print("showAllFiles:", strPath)
@@ -543,7 +483,9 @@ def showAllFiles(strPath, type):
     elif(type == 2): # effect
         if (cnt < 2):
             print("show all effect file failed:", strPath, "type:", type, " cnt:", cnt)
-
+    elif(type == 3): # effect
+        if (cnt < 1):
+            print("show all tran file failed:", strPath, "type:", type, " cnt:", cnt)
     pass
 def checkDst(dst):
     dstDirs = GetDirs(dst)
@@ -554,8 +496,10 @@ def checkDst(dst):
             # print("num full name:", valNum["fullname"])
             bgmPath = valNum["fullname"] + "\\BGM"
             effPath = valNum["fullname"] + "\\effects"
+            tranPath = valNum["fullname"] + "\\trans"
             showAllFiles(bgmPath, 1)
             showAllFiles(effPath,2)
+            showAllFiles(tranPath, 3)
     pass
 
 def batchRename(path, oldName, newName):
@@ -579,38 +523,21 @@ if __name__ == '__main__':
     parentPath = "D:\\work\\stella\\2025-04-02\\test"
     dst = parentPath + "\\dst"
 
-
     # 处理视频
     # src_video_first = parentPath + "\\video\\first"
     # proc_video_first(src_video_first, dst)
     # src_video_second = parentPath + "\\video\\second"
     # proc_video_second(src_video_second, dst)
-    src_video_third = parentPath + "\\video\\third"
-    proc_video_third(src_video_third, dst)
+    # src_video_third = parentPath + "\\video\\third"
+    # proc_video_third(src_video_third, dst)
     # #
     # # # 处理音频
     # src_audio_first = parentPath + "\\audio\\first"
     # proc_audio_first(src_audio_first, dst)
     # src_audio_second = parentPath + "\\audio\\second"
     # proc_audio_second(src_audio_second, dst)
-    src_audio_third = parentPath + "\\audio\\third"
-    proc_audio_third(src_audio_third, dst)
+    # src_audio_third = parentPath + "\\audio\\third"
+    # proc_audio_third(src_audio_third, dst)
 
-
-    # checkDst(dst)
-
-    # srcName = "d:\\tmp123\\s1.aac"
-    # dstName = "d:\\tmp123\\s2.aac"
-    # shutil.move(srcName, dstName)
-
-    # print(f"src:{src_audio_third}")
-    # files = GetFiles(src_audio_third)
-    # d = {}
-    # for f in files:
-    #     # print(f"file:{f}")
-    #     AppendAudioToDict(d, f)
-        # break
-
-    # batchRename(src_audio_third, "ChaoXieShi", "chaoxianshi")
-
+    checkDst(dst)
     print("finish style adjust")
