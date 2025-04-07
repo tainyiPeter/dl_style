@@ -23,6 +23,13 @@ def GetGameType(strType):
         "APEX": 8,
         "FORTNITE": 9,
         "WORLD_OF_WARSHIPS": 10,
+        "OW2":11,
+        "VAROLANT":12,
+        "DESTINY2": 13,
+        "BATTLEFIELD2042":14,
+        "RAINBOW6":15,
+        "WUKONG":16,
+        "SF6":17,
         "all": 100
     }
     strType = strType.strip()

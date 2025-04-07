@@ -14,6 +14,7 @@ def GetStyleType(strName):
 
     return dict.get(strName)
 
+# TODO "CDTrigger": 11,  "Beat": 12,
 def GetGameEvent(strEvent):
     dict = {
         "kill": 0,
@@ -22,6 +23,8 @@ def GetGameEvent(strEvent):
         "knock down": 3,
         "defeat": 4,
         "victory": 5,
+        "CDTrigger": 11,
+        "Beat": 12,
         "ALL": 100,
     }
 
@@ -39,6 +42,14 @@ def GetGameType(strType):
         "APEX": 8,
         "FORTNITE": 9,
         "WORLD_OF_WARSHIPS": 10,
+        "OW2": 11,
+        "VAROLANT": 12,
+        "DESTINY2": 13,
+        "BATTLEFIELD2042": 14,
+        "RAINBOW6": 15,
+        "WUKONG": 16,
+        "SF6": 17,
+        "ALL": 100,
     }
 
     return dict.get(strType)

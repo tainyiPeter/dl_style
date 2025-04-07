@@ -36,13 +36,19 @@ def GetDirs(path_k):
             dirs.append(mydict)
         return dirs
 
+def InvalidRow(rowName):
+    pos = rowName.find("wukong_nodamage")
+    return pos != -1
 
 if __name__ == '__main__':
-    audioSrcPath = "D:\\work\\dexuan\\2501\\play_test\\audio_short\\希腊语"
-    slogan = "Δεν έχει σημασία. Η αποτυχία είναι σαν ένα αεράκι το καλοκαίρι: φεύγει γρήγορα"
-    slogan = discard_end_char(slogan)
-    audioFileName = find_file_containing_ignore_case(audioSrcPath, slogan)
-    print(f"ret:{audioFileName}")
+    rowName = "wukong_nodamage_end1"
+    ret = InvalidRow(rowName)
+    print(f"ret:{ret}")
+    # audioSrcPath = "D:\\work\\dexuan\\2501\\play_test\\audio_short\\希腊语"
+    # slogan = "Δεν έχει σημασία. Η αποτυχία είναι σαν ένα αεράκι το καλοκαίρι: φεύγει γρήγορα"
+    # slogan = discard_end_char(slogan)
+    # audioFileName = find_file_containing_ignore_case(audioSrcPath, slogan)
+    # print(f"ret:{audioFileName}")
 
     # s = "Блискавична перемога! Неймовірний рух!  "
     #

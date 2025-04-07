@@ -45,7 +45,11 @@ tranName = "transition"
 
 gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17]  # 穿越火线不支持
 styleTypeList = [2, 3, 4, 5, 6, 7, 8]  # 素材风格
-eventTypeList = [0, 2, 3, 4, 5]  # 不包含 1 死亡
+eventTypeList = [0, 2, 3, 4, 5, 11, 12]  # 不包含 1 死亡
+
+def InvalidRow(rowName):
+    pos = rowName.find("wukong_nodamage")
+    return pos != -1
 
 def GetTranIndex(strName):
     l = strName.split("_")
@@ -163,6 +167,9 @@ def ParseGameDetails(c, df, bSecond):
     print(f"game 列数: {columns_cnt}")
     for row in range(1, row_count):
         strName  = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
+        if(InvalidRow(strName) == True):
+            print("sssssssssss")
+            continue
         styleIndex = GetStyleIndex(strName, bSecond)
         strStyleType = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
         styleType = GetStyleType(strStyleType)
@@ -203,6 +210,8 @@ def ParseEventDetails(c, df, bSecond):
     for row in range(1, row_count):
         # print("---------------------------------------------------------")
         strName = df.iloc[row, colName].strip()
+        if(InvalidRow(strName) == True):
+            continue
         styleIndex = GetStyleIndex(strName, bSecond)
         strStyleType = df.iloc[row, colStyle].strip()
         styleIndex = 100 * GetStyleType(strStyleType) + styleIndex
@@ -245,6 +254,8 @@ def ParseScopeDetail(c, df, bSecond):
         # print("---------------------------------------------------------")
         styleIndex = 0
         strName = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
+        if(InvalidRow(strName) == True):
+            continue
         styleIndex = GetStyleIndex(strName, bSecond)
         scope = df.iloc[row, colScope]
         if (scope < 1):
@@ -311,6 +322,8 @@ def ParseTranDetail(c, df):
     for row in range(1, row_count):
         # print("---------------------------------------------------------")
         strName = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
+        if(InvalidRow(strName) == True):
+            continue
         TranIndex = GetTranIndex(strName)
         if(TranIndex == 0):
             continue
@@ -461,19 +474,19 @@ if __name__ == '__main__':
     # eventTypeList = [0, 2, 3, 4, 5]  # 不包含 1 死亡
     #
     # # print(cGame[9])
-    a1 = {}
-    a2 = {}
-    for keyGame, valueGame in enumerate(gameTypeList):
-        for keyStyle, valueStyle in enumerate(styleTypeList):
-            for keyEvent, valueEvent in enumerate(eventTypeList):
-                strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
-                value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
-                value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
-                a1[strKey] = value_all
-                a2[strKey] = value_selected
-
-    SaveDictFile("d:\\tmp\\all.json", a1)
-    SaveDictFile("d:\\tmp\\selected.json", a2)
+    # a1 = {}
+    # a2 = {}
+    # for keyGame, valueGame in enumerate(gameTypeList):
+    #     for keyStyle, valueStyle in enumerate(styleTypeList):
+    #         for keyEvent, valueEvent in enumerate(eventTypeList):
+    #             strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
+    #             value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
+    #             value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
+    #             a1[strKey] = value_all
+    #             a2[strKey] = value_selected
+    #
+    # SaveDictFile("d:\\tmp\\all.json", a1)
+    # SaveDictFile("d:\\tmp\\selected.json", a2)
 
 
     print("finish")
