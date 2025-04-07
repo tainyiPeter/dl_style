@@ -41,6 +41,9 @@ selectedMode = 2    # 精选模式
 all_games = 100     # 适合所有游戏
 all_events = 100    # 所有事件
 
+eventCDTrigger = 11  #法术
+eventBeat = 12  #重击
+
 tranName = "transition"
 
 gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17]  # 穿越火线不支持
@@ -168,7 +171,7 @@ def ParseGameDetails(c, df, bSecond):
     for row in range(1, row_count):
         strName  = df.iloc[row, colName].strip()  # 读取第row行，第column列的数据
         if(InvalidRow(strName) == True):
-            print("sssssssssss")
+            print(f"invalidRow:{strName}")
             continue
         styleIndex = GetStyleIndex(strName, bSecond)
         strStyleType = df.iloc[row, colStyle].strip()  # 读取第row行，第column列的数据
@@ -222,10 +225,7 @@ def ParseEventDetails(c, df, bSecond):
             print(f"parese event failed, row:{row}, bSecond:{bSecond}")
             continue
         elif eventType == all_events:
-            for eIdx in range(0, 6):
-                if eIdx == 1:
-                    # 去掉死亡事件
-                    continue
+            for eIdx in eventTypeList:
                 update_dict(c, eIdx, styleIndex)
         else:
             update_dict(c, eventType, styleIndex)
@@ -286,6 +286,8 @@ def ParseScopeDetail(c, df, bSecond):
                     num = styleIndex + 10000 * gameIdx
                     if (eventType == all_events):
                         for oneEventType in eventTypeList:
+                            if ((oneEventType == eventCDTrigger or oneEventType == eventBeat) and (gameType != 16)):
+                                continue
                             update_dict(c, oneEventType, num)
                     else:
                         update_dict(c, eventType, num)
@@ -293,11 +295,13 @@ def ParseScopeDetail(c, df, bSecond):
                 num = styleIndex + 10000 * gameType
                 if (eventType == all_events):
                     for oneEventType in eventTypeList:
+                        if ((oneEventType == eventCDTrigger or oneEventType == eventBeat) and (gameType != 16)):
+                            continue
                         update_dict(c, oneEventType, num)
                 else:
                     update_dict(c, eventType, num)
-                #update_dict(c, eventType, num)
-
+        # num 的值 如：    85206
+        # 06 套数  2 word or effect  5 风格 8 游戏类型 占2位
 
 def parseScope(fileName, dstPath):
     c = {}
@@ -397,7 +401,9 @@ def GetEffectStyleIndex(gameType, styleType, eventType, bSelected):
         return ret
         #ret = MergeList(ret, selList)
     else:
-        ret = MergeList(cGame[gameType], cEvent[eventType])
+        oneGame = cGame.get(gameType, [])
+        oneEvent = cEvent.get(eventType, [])
+        ret = MergeList(oneGame, oneEvent)
         ret = GetStylelist(ret, styleType)
         return ret
 
@@ -468,25 +474,24 @@ if __name__ == '__main__':
     SaveDictFile(dstPath + "\\events.json", cEvent)
     SaveDictFile(dstPath + "\\effect_scope.json", cScope)
     SaveDictFile(dstPath + "\\trans.json", cTran)
+
     #
-    # gameTypeList = [1, 2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17]  # 穿越火线不支持
-    # styleTypeList = [2, 3, 4, 5, 6, 7, 8]  # 素材风格
-    # eventTypeList = [0, 2, 3, 4, 5]  # 不包含 1 死亡
-    #
-    # # print(cGame[9])
-    # a1 = {}
-    # a2 = {}
-    # for keyGame, valueGame in enumerate(gameTypeList):
-    #     for keyStyle, valueStyle in enumerate(styleTypeList):
-    #         for keyEvent, valueEvent in enumerate(eventTypeList):
-    #             strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
-    #             value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
-    #             value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
-    #             a1[strKey] = value_all
-    #             a2[strKey] = value_selected
-    #
-    # SaveDictFile("d:\\tmp\\all.json", a1)
-    # SaveDictFile("d:\\tmp\\selected.json", a2)
+    # print(cGame[9])
+    a1 = {}
+    a2 = {}
+    for keyGame, valueGame in enumerate(gameTypeList):
+        for keyStyle, valueStyle in enumerate(styleTypeList):
+            for keyEvent, valueEvent in enumerate(eventTypeList):
+                strKey = "{0}-{1}-{2}".format(valueGame, valueStyle, valueEvent)
+                if ((valueEvent == eventCDTrigger or valueEvent == eventBeat) and (valueGame != 16)):
+                    continue
+                value_all = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, False)
+                value_selected = GetEffectStyleIndex(valueGame, valueStyle, valueEvent, True)
+                a1[strKey] = value_all
+                a2[strKey] = value_selected
+
+    SaveDictFile("d:\\tmp\\all.json", a1)
+    SaveDictFile("d:\\tmp\\selected.json", a2)
 
 
     print("finish")
