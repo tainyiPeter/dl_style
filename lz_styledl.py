@@ -133,7 +133,7 @@ def GetList():
     print(f"reqUrl:{reqUrl}")
 
     #print(paramList)
-    # reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-legionzone/api/v1/getClassifyList?appId=1593389727517312&nonce=aae3769c-d3f2-4c71-81c8-d200d0dc4763&sign_type=RSA2&timestamp=1741070251617&sign=ChlEO7xFT3jog%2BT1l7w%2BcjZwEQmXk%2FP%2BgBd7JCwt8KLORSWjJ1zoLOKOqLAxrf%2FRh1FJvR7rcA6thejdfSnrD9hhz46%2Bn0qBnigvc59iGqgV5nRPqR2LrOIN5i1sKnXA6ZcU0sFJYUmmMExflydUBMAcKnrcw9GtGUEKmPXZJ4g%3D"
+    # reqUrl = "https://cloud-pay.mbgtest.lenovomm.com/cloud-legionzone/api/v1/getClassifyList?appId=1593389727517312&nonce=9905c43e-b108-4386-9d25-8e4fda8b0bf8&sign_type=RSA2&timestamp=1744619397673&sign=imShWEuMLXVkw1XiG0ILwjCuZbije9-p9fDBxssSbKmctrYe5_eWyuruPBZod4_E-pvcEHrkISzZs5TCQ9CGJYFnH6OVTseKnQ90EdvIFxm1pCF7UATwX7FE_uVQh2CUi7YIDRy_JJPzQd3zBXRKPSQfbbu20Sjhfej28O_Ig4gc%3D"
     http = httplib2.Http()
     response, content = http.request(reqUrl,"GET")
     print("----------------------------------------------------------------")
@@ -384,6 +384,7 @@ def updataStyles():
 
     src = "D:\\work\\huangxipeng\\3-21\\dst"
     src = "D:\\tmp123"
+    src = "D:\\work\\stella\\2025-04-02\\test\\dst"
     dst = src
     if not os.path.exists(dst):
         os.makedirs(dst)  # 创建路径
@@ -441,6 +442,7 @@ if __name__ == '__main__':
     # SingFileUpdate(singFile)
 
     # xlsxFile = "D:\\work\\huangxipeng\\3-21\\dst\\lz_uf_2025-04-02_10-17-30.xlsx"
+    # xlsxFile = "D:\\work\\stella\\2025-04-02\\test\\dst\\lz_uf_2025-04-14.xlsx"
     # UpdateXlsxFile(xlsxFile)
 
     # token = GetAuthToken()

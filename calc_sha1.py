@@ -87,7 +87,7 @@ if __name__ == "__main__":
         'Column2': ['A', 'B', 'C']
     }
 
-    langPath = "D:\\tmp\\lang26"
+    langPath = "D:\\work\\dexuan\\2501\\play_test\\dstPath_123"
     dst = "D:\\tmp\\12"
 
     # dict_lang = {
@@ -104,11 +104,11 @@ if __name__ == "__main__":
     dstFile = f"{parentPath}\\cloud_sha256_{current_time}.xlsx"
 
     dirs = GetDirs(parentPath)
-    langdict ={
-        "name":"lang",
-        "fullname":langPath
+    langdict = {
+        "name": "lang",
+        "fullname": langPath
     }
-    # dirs.append(langdict)
+    dirs.append(langdict)
 
     dict = {}
     for pathKey, pathValue in enumerate(dirs):
@@ -116,11 +116,14 @@ if __name__ == "__main__":
         files = GetFiles(pathValue["fullname"])
         fileList = []
         shaList = []
+        style_name = ""
         for key, val in enumerate(files):
             # print("val:", val)
             fileName = os.path.basename(val)
             style_name = getLastFile(val)
             sha1_value = calculate_file_sha256(val)
+
+            # print(f"style_name:{style_name}, type:{type(style_name)}")
 
             fileList.append(fileName)
             shaList.append(sha1_value)
@@ -132,4 +135,4 @@ if __name__ == "__main__":
         dict[style_name] = a
 
     SaveDataToExcel(dstFile, dict)
-    print("finish")
+    print(f"finish dstFile:{dstFile}")

@@ -66,15 +66,17 @@ def unzip_file(zip_file, dstPath):
 
 if __name__ == '__main__':
     # dst = "D:\\work\\dexuan\\2501\\dst"
-    src = "D:\\tmp\\lang26"
-    dst = "D:\\tmp\\12"
+    src = "D:\\work\\dexuan\\2501\\play_test\\dstPath_123"
+    dst = "D:\\tmp\\13"
 
-    langs = GetFiles(src)
-    cnt = 0
-    for key, val in enumerate(langs):
-        unzip_file(val, dst)
-        cnt += 1
-        print("unzip file:", val, " cnt:", cnt)
+    zip_all_files(src)
+
+    # langs = GetFiles(src)
+    # cnt = 0
+    # for key, val in enumerate(langs):
+    #     unzip_file(val, dst)
+    #     cnt += 1
+    #     print("unzip file:", val, " cnt:", cnt)
 
 
     print("finish")
