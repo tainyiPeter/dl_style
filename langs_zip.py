@@ -67,7 +67,8 @@ def unzip_file(zip_file, dstPath):
 if __name__ == '__main__':
     # dst = "D:\\work\\dexuan\\2501\\dst"
     src = "D:\\work\\dexuan\\2501\\play_test\\dstPath_123"
-    dst = "D:\\tmp\\13"
+    src = "D:\\work\\stella\\play_short_20250404_finish\\dstPath"
+
 
     zip_all_files(src)
 

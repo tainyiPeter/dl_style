@@ -180,3 +180,5 @@ def discard_end_char(s):
             if(s_len == last_dot_index+len(c)):
                 s = s[0:last_dot_index]
     return s
+
+

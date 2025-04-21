@@ -87,8 +87,11 @@ if __name__ == "__main__":
         'Column2': ['A', 'B', 'C']
     }
 
-    langPath = "D:\\work\\dexuan\\2501\\play_test\\dstPath_123"
-    dst = "D:\\tmp\\12"
+    # langPath = "D:\\work\\dexuan\\2501\\play_test\\dstPath_123"
+    # dst = "D:\\tmp\\12"
+
+    langPath = "D:\\work\\stella\\play_short_20250404_finish\\dstPath"
+    # dst = "D:\\work\\jiachaoyi\\4-19"
 
     # dict_lang = {
     #     "fileName":[],
@@ -100,8 +103,8 @@ if __name__ == "__main__":
     parentPath = "D:\\work\\stella\\2025-04-02\\test"
     parentPath += "\\dst"
 
-    current_time = datetime.now().strftime("lz_uf_%Y-%m-%d_%H-%M-%S")
-    dstFile = f"{parentPath}\\cloud_sha256_{current_time}.xlsx"
+    current_time = datetime.now().strftime("_%Y-%m-%d_%H-%M-%S")
+    dstFile = f"{parentPath}\\cloud_sha256{current_time}.xlsx"
 
     dirs = GetDirs(parentPath)
     langdict = {
