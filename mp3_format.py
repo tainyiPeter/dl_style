@@ -53,7 +53,7 @@ def convert_sing(src_file, dst_file):
         else:
             print(f"{src_file} -> 转换失败")
 
-        os.remove(dst_file)
+        os.remove(src_file)
     except Exception as e:
         print(f"{src_file} -> 转换失败: {e}")
 def convert_m4a_to_mp3(input_folder: str, output_folder: str):
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     input_folder = "D:\\tmp123\\MP3"
     output_folder = "D:\\tmp123\\MP3"
 
-    src_path = "D:\\work\\stella\\play_short_20250404_finish\\dstPath"
+    src_path = "D:\\work\\stella\\play_short_20250404_finish\\dstPath123"
     list_files_in_directory(src_path)
 
 

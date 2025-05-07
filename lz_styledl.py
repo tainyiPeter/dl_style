@@ -431,8 +431,9 @@ def UpdateXlsxFile(fullName):
 
 if __name__ == '__main__':
     # updataStyles()
-    GetList()
+    # GetList()
     # GetData(302,1 , 50)
+    GetData(299, 1, 50)
 
     # updataStyles()
 
